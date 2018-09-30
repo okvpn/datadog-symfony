@@ -18,38 +18,5 @@ class OkvpnDatadogBundle extends Bundle
     {
         $container->addCompilerPass(new SqlLoggerPass(['default']));
         $container->addCompilerPass(new PushDatadogHandlerPass());
-
-        $client = $this->container->get('okvpn_datadog.client');
-
-
-        /*
-         * Increment
-         *
-         * Counters track how many times something happens per second, such as page views.
-         * @link https://docs.datadoghq.com/developers/dogstatsd/data_types/#counters
-         *
-         * @param string          $metrics    Metric(s) to increment
-         * @param int             $delta      Value to decrement the metric by
-         * @param float           $sampleRate Sample rate of metric
-         * @param string[]        $tags       List of tags for this metric
-         *
-         * @return DogStatsInterface
-         */
-        $client->increment('page.views', 1);
-
-        /*
-         * Decrement
-         *
-         * Counters track how many times something happens per second, such as page views.
-         * @link https://docs.datadoghq.com/developers/dogstatsd/data_types/#counters
-         *
-         * @param string          $metrics    Metric(s) to increment
-         * @param int             $delta      Value to decrement the metric by
-         * @param float           $sampleRate Sample rate of metric
-         * @param string[]        $tags       List of tags for this metric
-         *
-         * @return DogStatsInterface
-         */
-        $client->decrement('page.views', 1);
     }
 }
