@@ -210,7 +210,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
 
     protected function touch()
     {
-        $path = basename($this->deduplicationStore);
+        $path = dirname($this->deduplicationStore);
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }

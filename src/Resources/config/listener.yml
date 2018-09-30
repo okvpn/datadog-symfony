@@ -9,6 +9,12 @@ services:
             - { name: kernel.event_listener, event: console.error, method: onConsoleError }
             - { name: kernel.event_listener, event: console.exception, method: onConsoleError }
 
+    okvpn_datadog.timming_http_listener:
+        class: Okvpn\Bundle\DatadogBundle\EventListener\ResponseTimeListener
+        arguments: ['@kernel', '@okvpn_datadog.client']
+        tags:
+            - { name: kernel.event_listener, event: kernel.terminate,  method: onKernelTerminate }
+
     okvpn_datadog.flush_buffer.listener:
         class: Okvpn\Bundle\DatadogBundle\EventListener\DatadogFlushBufferListener
         arguments: ['@okvpn_datadog.logger', '@okvpn_datadog.monolog.log_handler']

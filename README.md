@@ -65,6 +65,7 @@ Where `app` metrics namespace.
 | app.doctrine.count            | rate         | Count of sql queries per second                                            |
 | app.doctrine.95percentile     | gauge        | 95th percentile of execute time of sql query (ms.)                         |
 | app.exception                 | event        | Event then exception is happens                                            |
+| app.http_request              | timing       | Measure timing how long it takes to fully render a page                    |
 
 ## Configuration
 
