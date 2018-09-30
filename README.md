@@ -2,6 +2,8 @@
 
 Symfony [Datadog][1] integration to monitor and track for application errors and send notifications about them.
 
+[![Latest Stable Version](https://poser.pugx.org/okvpn/datadog-symfony/v/stable)](https://packagist.org/packages/okvpn/datadog-symfony) [![Latest Unstable Version](https://poser.pugx.org/okvpn/datadog-symfony/v/unstable)](https://packagist.org/packages/okvpn/datadog-symfony) [![Total Downloads](https://poser.pugx.org/okvpn/datadog-symfony/downloads)](https://packagist.org/packages/okvpn/datadog-symfony) [![License](https://poser.pugx.org/okvpn/datadog-symfony/license)](https://packagist.org/packages/okvpn/datadog-symfony)
+
 ## Benefits
 
 Use datadog-symfony for:
