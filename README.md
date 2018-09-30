@@ -17,7 +17,7 @@ Install using [composer][2] following the official Composer [documentation][3]:
 
 1. Install via composer:
 ```
-composer require okvpn/datadog-bundle
+composer require okvpn/datadog-symfony
 ```
 
 2. And add this bundle to your AppKernel:
@@ -98,7 +98,6 @@ okvpn_datadog:
             - Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
         skip_command:     # Skip exception for console command
             - okvpn:message-queue:consume
-        skip_wildcard:    # 
 ```
 
 ## Usage
