@@ -1,0 +1,55 @@
+parameters:
+    okvpn_datadog.monolog_channels: ['monolog.logger']
+    okvpn_datadog.logging: null
+    okvpn_datadog.enable: false
+
+services:
+    okvpn_datadog.logger:
+        class: Okvpn\Bundle\DatadogBundle\Logging\DeduplicationDatadogLogger
+        public: true
+        arguments:
+            - '@okvpn_datadog.client'
+            - '@okvpn_datadog.logger.artifact_storage'
+            - '@okvpn_datadog.logger.context_watcher'
+            - '@okvpn_datadog.dumper.context'
+            - '@okvpn_datadog.services.hash_exception'
+            - ~
+            - ~
+
+    okvpn_datadog.client:
+        class: Okvpn\Bundle\DatadogBundle\Client\DatadogClient
+        arguments: [~]
+        public: true
+
+    okvpn_datadog.dumper.context:
+        class: Okvpn\Bundle\DatadogBundle\Dumper\MonologContextDumper
+        public: false
+
+    okvpn_datadog.services.hash_exception:
+        class: Okvpn\Bundle\DatadogBundle\Services\ExceptionHashService
+        arguments: ['%kernel.cache_dir%']
+        public: false
+
+    okvpn_datadog.services.skip_capture:
+        class: Okvpn\Bundle\DatadogBundle\Services\SkipCaptureService
+        arguments: ['@okvpn_datadog.services.hash_exception', ~]
+        public: false
+
+    okvpn_datadog.logger.artifact_storage:
+        class: Okvpn\Bundle\DatadogBundle\Logging\LocalArtifactsStorage
+        arguments: ['%kernel.logs_dir%']
+        public: true
+
+    okvpn_datadog.monolog.log_handler:
+        class: Okvpn\Bundle\DatadogBundle\Logging\DatadogHandler
+        public: false
+        arguments: ['@okvpn_datadog.services.skip_capture']
+
+    okvpn_datadog.logger.context_watcher:
+        class: Okvpn\Bundle\DatadogBundle\Logging\Watcher\DefaultWatcher
+        public: false
+        arguments:
+            - ['Cookie:', 'X-Wsse:', 'Authorization:']
+        calls:
+            - [setRequestStack, '@request_stack']
+            - [setTokenStorage, '@security.token_storage']]

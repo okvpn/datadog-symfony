@@ -1,0 +1,5 @@
+services:
+    okvpn_datadog.logger.sql:
+        class: Okvpn\Bundle\DatadogBundle\Logging\DatadogSqlLogger
+        arguments: ['okvpn_datadog.client']
+        public: false

@@ -1,0 +1,24 @@
+{
+    "name":"okvpn/datadog-bundle",
+    "type":"symfony-bundle",
+    "license":"MIT",
+    "description": "Symfony Datadog integration",
+    "keywords": ["DogStatsD", "Symfony datadog", "php-datadog"],
+    "authors": [
+        {
+            "name": "Uladzimir Tsykun",
+            "homepage": "https://github.com/vtsykun",
+            "email": "vtsykun@okvpn.org"
+        }
+    ],
+    "autoload":{
+        "psr-4":{
+            "Okvpn\\Bundle\\DatadogBundle\\": "src"
+        }
+    },
+    "require":{
+        "php":">=7.1",
+        "symfony/framework-bundle": "~2.8|~3.0|~4.0",
+        "graze/dog-statsd": "^0.4"
+    }
+}
