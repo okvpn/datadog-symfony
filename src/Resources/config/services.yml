@@ -7,14 +7,17 @@ services:
     okvpn_datadog.logger:
         class: Okvpn\Bundle\DatadogBundle\Logging\DeduplicationDatadogLogger
         public: true
+        lazy: true
         arguments:
             - '@okvpn_datadog.client'
             - '@okvpn_datadog.logger.artifact_storage'
             - '@okvpn_datadog.logger.context_watcher'
             - '@okvpn_datadog.dumper.context'
             - '@okvpn_datadog.services.hash_exception'
-            - ~
-            - ~
+            - null
+            - null
+        calls:
+            - [setEnable, ['%okvpn_datadog.enable%']]
 
     okvpn_datadog.client:
         class: Okvpn\Bundle\DatadogBundle\Client\DatadogClient
@@ -51,5 +54,5 @@ services:
         arguments:
             - ['Cookie:', 'X-Wsse:', 'Authorization:']
         calls:
-            - [setRequestStack, '@request_stack']
-            - [setTokenStorage, '@security.token_storage']]
+            - [setRequestStack, ['@request_stack']]
+            - [setTokenStorage, ['@security.token_storage']]

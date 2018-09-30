@@ -15,7 +15,7 @@ class PushDatadogHandlerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->getParameter('okvpn_datadog.logging') === 'all') {
+        if ('all' !== $container->getParameter('okvpn_datadog.logging') || true === $container->getParameter('okvpn_datadog.enable')) {
             return;
         }
 
@@ -38,7 +38,7 @@ class PushDatadogHandlerPass implements CompilerPassInterface
         foreach ($loggerByChanel as $loggerId) {
             if ($container->hasDefinition($loggerId)) {
                 $definition = $container->getDefinition($loggerId);
-                $definition->addMethodCall('pushHandler', [new Reference('cuantic_datadog.logger_handler')]);
+                $definition->addMethodCall('pushHandler', [new Reference('okvpn_datadog.monolog.log_handler')]);
             }
         }
     }

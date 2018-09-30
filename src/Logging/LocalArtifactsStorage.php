@@ -21,8 +21,9 @@ class LocalArtifactsStorage implements ArtifactsStorageInterface
     /**
      * {@inheritdoc}
      */
-    public function save(string $content, string $code): string
+    public function save(string $content): string
     {
+        $code = sha1(uniqid('', true));
         $this->fs->dumpFile($this->filename($code), $content);
 
         return $code;

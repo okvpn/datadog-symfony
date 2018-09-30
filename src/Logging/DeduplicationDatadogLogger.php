@@ -34,6 +34,11 @@ class DeduplicationDatadogLogger extends AbstractLogger
     protected $deduplicationStore;
 
     /**
+     * @var bool
+     */
+    protected $enable = true;
+
+    /**
      * @var array
      */
     protected $formatLevelMap = [
@@ -61,11 +66,19 @@ class DeduplicationDatadogLogger extends AbstractLogger
     }
 
     /**
+     * @param bool $enable
+     */
+    public function setEnable($enable)
+    {
+        $this->enable = $enable;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function log($level, $message, array $context = []): void
+    public function log($level, $message, array $context = [])
     {
-        if ($this->statsd->getOption('enable', false) === true) {
+        if (false === $this->enable) {
             return;
         }
 
@@ -108,7 +121,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
     /**
      * @return array
      */
-    public function clearDeduplicationStore(): array
+    public function clearDeduplicationStore()
     {
         $logs = $this->deduplicationLogs();
         $this->touch();
@@ -119,7 +132,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
     /**
      * @return array
      */
-    public function deduplicationLogs(): array
+    public function deduplicationLogs()
     {
         if (!file_exists($this->deduplicationStore)) {
             return [];
@@ -160,7 +173,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
         return false;
     }
 
-    protected function collectLogs(): void
+    protected function collectLogs()
     {
         if (!file_exists($this->deduplicationStore)) {
             return;
@@ -190,7 +203,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
         $this->gc = false;
     }
 
-    protected function appendRecord(DatadogEvent $event, string $hash): void
+    protected function appendRecord(DatadogEvent $event, string $hash)
     {
         file_put_contents($this->deduplicationStore, $event->getDatetime() . ':' . $hash . ':' . preg_replace('{[\r\n].*}', '', $event->getShortMessage()) . "\n", FILE_APPEND);
     }

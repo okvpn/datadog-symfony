@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\DependencyInjection;
 
-use Doctrine\DBAL\Logging\SQLLogger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -24,12 +23,21 @@ class OkvpnDatadogExtension extends Extension
         $loader->load('services.yml');
         $container->getDefinition('okvpn_datadog.services.skip_capture')
             ->replaceArgument(1, $this->defaultHandlerExceptions($config));
+        $container->getDefinition('okvpn_datadog.logger')
+            ->replaceArgument(5, $config['dedup_path'])
+            ->replaceArgument(6, $config['dedup_keep_time']);
+        $container->getDefinition('okvpn_datadog.logger.artifact_storage')
+            ->replaceArgument(0, $config['artifacts_path'] ?: $container->getParameter('kernel.logs_dir'));
+        $container->getDefinition('okvpn_datadog.client')
+            ->replaceArgument(0, $config);
 
-        if ($config['doctrine'] && class_exists(SQLLogger::class)) {
-            $loader->load('sqllogger.yml');
-        }
-        if ('none' !== $config['exception'] && true === $config['enable']) {
-            $loader->load('listener.yml');
+        if (true === $config['enable']) {
+            if (true === $config['doctrine']) {
+                $loader->load('sqllogger.yml');
+            }
+            if ('none' !== $config['exception']) {
+                $loader->load('listener.yml');
+            }
         }
 
         $container->setParameter('okvpn_datadog.logging', $config['exception']);
@@ -38,9 +46,9 @@ class OkvpnDatadogExtension extends Extension
 
     protected function defaultHandlerExceptions(array $config): array
     {
-        $config = $config['handle_exceptions'];
+        $config = $config['handle_exceptions'] ?? [];
         $config['skip_instanceof'] = array_merge(
-            $config['skip_instanceof'],
+            $config['skip_instanceof'] ?? [],
             [
                 'Symfony\Component\Console\Exception\ExceptionInterface', //command argument invalid
                 'Symfony\Component\HttpKernel\Exception\HttpExceptionInterface', //Http exceptions

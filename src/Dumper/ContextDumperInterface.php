@@ -14,5 +14,5 @@ interface ContextDumperInterface
      *
      * @return DatadogEvent
      */
-public function dumpContext(string $message, array $context): DatadogEvent;
+    public function dumpContext(string $message, array $context): DatadogEvent;
 }

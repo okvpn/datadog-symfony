@@ -24,13 +24,17 @@ class SqlLoggerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if (false === $container->hasDefinition('okvpn_datadog.logger.sql')) {
+            return;
+        }
+
         foreach ($this->connections as $name) {
             $configuration = sprintf('doctrine.dbal.%s_connection.configuration', $name);
             if (false === $container->hasDefinition($configuration)) {
                 continue;
             }
-            $loggerId = 'okvpn_datadog.sql_logger.'.$name;
-            $container->setDefinition($loggerId, class_exists(ChildDefinition::class) ? new ChildDefinition('cuantic_datadog.sql_logger') : new DefinitionDecorator('cuantic_datadog.sql_logger'));
+            $loggerId = 'okvpn_datadog.sql_logger.' . $name;
+            $container->setDefinition($loggerId, class_exists(ChildDefinition::class) ? new ChildDefinition('okvpn_datadog.logger.sql') : new DefinitionDecorator('okvpn_datadog.logger.sql'));
             $configuration = $container->getDefinition($configuration);
             if ($configuration->hasMethodCall('setSQLLogger')) {
                 $chainLoggerId = 'doctrine.dbal.logger.chain.' . $name;
