@@ -147,6 +147,30 @@ it is stored and available for graphing alongside the rest of your metrics.
 
 ![1](src/Resources/docs/1.png)
 
+## Screencasts.
+
+What can be done using datadog.
+
+### Datadog custom symfony dashboard
+
+![dashboard](src/Resources/docs/dashboard.png)
+
+### Datadog Anomaly Monitor of running consumers
+
+![consumers](src/Resources/docs/consumers.png)
+
+### Live exception event stream
+
+![exception](src/Resources/docs/exception.png)
+
+### Send notification about errors in telegram.
+
+![telegram](src/Resources/docs/telegram.png)
+
+### Create JIRA issue when some alarm/exception triggers
+
+![jira](src/Resources/docs/jira.png)
+
 License
 -------
 MIT License. See [LICENSE](LICENSE).
