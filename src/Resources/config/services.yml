@@ -1,7 +1,7 @@
 parameters:
     okvpn_datadog.monolog_channels: ['monolog.logger']
     okvpn_datadog.logging: null
-    okvpn_datadog.enable: false
+    okvpn_datadog.profiling: false
 
 services:
     okvpn_datadog.logger:
@@ -16,12 +16,19 @@ services:
             - '@okvpn_datadog.services.hash_exception'
             - null
             - null
-        calls:
-            - [setEnable, ['%okvpn_datadog.enable%']]
 
     okvpn_datadog.client:
         class: Okvpn\Bundle\DatadogBundle\Client\DatadogClient
         arguments: [~]
+        public: true
+
+    okvpn_datadog.logger.artifact_storage:
+        class: Okvpn\Bundle\DatadogBundle\Logging\LocalArtifactsStorage
+        arguments: ['%kernel.logs_dir%']
+        public: true
+
+    okvpn_datadog.error_bag:
+        class: Okvpn\Bundle\DatadogBundle\Logging\ErrorBag
         public: true
 
     okvpn_datadog.dumper.context:
@@ -38,15 +45,10 @@ services:
         arguments: ['@okvpn_datadog.services.hash_exception', ~]
         public: false
 
-    okvpn_datadog.logger.artifact_storage:
-        class: Okvpn\Bundle\DatadogBundle\Logging\LocalArtifactsStorage
-        arguments: ['%kernel.logs_dir%']
-        public: true
-
     okvpn_datadog.monolog.log_handler:
         class: Okvpn\Bundle\DatadogBundle\Logging\DatadogHandler
         public: false
-        arguments: ['@okvpn_datadog.services.skip_capture']
+        arguments: ['@okvpn_datadog.services.skip_capture', '@okvpn_datadog.error_bag']
 
     okvpn_datadog.logger.context_watcher:
         class: Okvpn\Bundle\DatadogBundle\Logging\Watcher\DefaultWatcher

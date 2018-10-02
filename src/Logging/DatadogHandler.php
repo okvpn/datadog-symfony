@@ -10,22 +10,17 @@ use Okvpn\Bundle\DatadogBundle\Services\SkipCaptureService;
 
 class DatadogHandler extends AbstractProcessingHandler
 {
-    /**
-     * @var array
-     */
-    protected $rootError;
-
-    /**
-     * @var SkipCaptureService
-     */
-    protected $skipCaptureService;
+    private $errorBag;
+    private $skipCaptureService;
 
     /**
      * @param SkipCaptureService $skipCaptureService
+     * @param ErrorBag $errorBag
      */
-    public function __construct(SkipCaptureService $skipCaptureService)
+    public function __construct(SkipCaptureService $skipCaptureService, ErrorBag $errorBag)
     {
         parent::__construct(Logger::ERROR, true);
+        $this->errorBag = $errorBag;
         $this->skipCaptureService = $skipCaptureService;
     }
 
@@ -43,19 +38,9 @@ class DatadogHandler extends AbstractProcessingHandler
                 }
             }
 
-            if ($exception && null === $this->rootError && false === $this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception)) {
-                $this->rootError = $record;
+            if ($exception && false === $this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception)) {
+                $this->errorBag->pushError($record);
             }
         }
-    }
-
-    public function clear(): void
-    {
-        $this->rootError = null;
-    }
-
-    public function getRootError(): ?array
-    {
-        return $this->rootError;
     }
 }

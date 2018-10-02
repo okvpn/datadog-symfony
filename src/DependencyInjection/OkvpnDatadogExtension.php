@@ -31,17 +31,15 @@ class OkvpnDatadogExtension extends Extension
         $container->getDefinition('okvpn_datadog.client')
             ->replaceArgument(0, $config);
 
-        if (true === $config['enable']) {
+        if (true === $config['profiling']) {
             if (true === $config['doctrine']) {
                 $loader->load('sqllogger.yml');
             }
-            if ('none' !== $config['exception']) {
-                $loader->load('listener.yml');
-            }
+            $loader->load('listener.yml');
         }
 
         $container->setParameter('okvpn_datadog.logging', $config['exception']);
-        $container->setParameter('okvpn_datadog.enable', $config['enable']);
+        $container->setParameter('okvpn_datadog.profiling', $config['profiling']);
     }
 
     protected function defaultHandlerExceptions(array $config): array

@@ -51,7 +51,7 @@ class AppKernel extends Kernel
 
 ```
 okvpn_datadog:
-    enable: true
+    profiling: true
     namespace: app # You app namespace for custome metric app.*, see https://docs.datadoghq.com/developers/metrics/#naming-metrics
 ```
 
@@ -76,7 +76,7 @@ A more complex setup look like this `config.yml`:
 ```
 
 okvpn_datadog:
-    enable: true          # Default false
+    profiling: true       # Default false: enable exception, http request etc.
     namespace: app        # Metric namespace
     port: 8125            # datadog udp port
     hostname: 127.0.0.1

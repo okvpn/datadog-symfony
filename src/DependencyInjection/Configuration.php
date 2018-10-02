@@ -71,7 +71,7 @@ class Configuration implements ConfigurationInterface
             ->integerNode('dedup_keep_time')
                 ->defaultValue(7 * 86400)
             ->end()
-            ->booleanNode('enable')
+            ->booleanNode('profiling')
                 ->defaultFalse()
             ->end();
 

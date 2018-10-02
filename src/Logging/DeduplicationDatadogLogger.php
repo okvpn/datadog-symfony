@@ -34,11 +34,6 @@ class DeduplicationDatadogLogger extends AbstractLogger
     protected $deduplicationStore;
 
     /**
-     * @var bool
-     */
-    protected $enable = true;
-
-    /**
      * @var array
      */
     protected $formatLevelMap = [
@@ -66,22 +61,10 @@ class DeduplicationDatadogLogger extends AbstractLogger
     }
 
     /**
-     * @param bool $enable
-     */
-    public function setEnable($enable)
-    {
-        $this->enable = $enable;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function log($level, $message, array $context = [])
     {
-        if (false === $this->enable) {
-            return;
-        }
-
         $this->touch();
         $context = array_merge(
             $context,

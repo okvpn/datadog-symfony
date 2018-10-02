@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\EventListener;
 
-use Okvpn\Bundle\DatadogBundle\Logging\DatadogHandler;
+use Okvpn\Bundle\DatadogBundle\Logging\ErrorBag;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
@@ -12,23 +12,23 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 class DatadogFlushBufferListener
 {
     /**
-     * @var DatadogHandler
+     * @var ErrorBag
      */
-    protected $errorHandler;
+    private $errorBag;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @param LoggerInterface $logger
-     * @param DatadogHandler $errorHandler
+     * @param ErrorBag $errorBag
      */
-    public function __construct(LoggerInterface $logger, DatadogHandler $errorHandler)
+    public function __construct(LoggerInterface $logger, ErrorBag $errorBag)
     {
         $this->logger = $logger;
-        $this->errorHandler = $errorHandler;
+        $this->errorBag = $errorBag;
     }
 
     /**
@@ -36,8 +36,8 @@ class DatadogFlushBufferListener
      */
     public function onKernelTerminate(PostResponseEvent $event): void
     {
-        if ($record = $this->errorHandler->getRootError()) {
-            $this->errorHandler->clear();
+        if ($record = $this->errorBag->rootError()) {
+            $this->errorBag->flush();
             try {
                 $context = $record['context'];
                 $context['tags'] = ['error:http', 'channel:' . $record['channel']];
@@ -51,8 +51,8 @@ class DatadogFlushBufferListener
      */
     public function onCliTerminate(ConsoleTerminateEvent $event): void
     {
-        if ($record = $this->errorHandler->getRootError()) {
-            $this->errorHandler->clear();
+        if ($record = $this->errorBag->rootError()) {
+            $this->errorBag->flush();
             try {
                 $context = $record['context'];
                 $context['tags'] = ['error:console', 'channel:' . $record['channel']];

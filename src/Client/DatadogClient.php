@@ -14,30 +14,16 @@ class DatadogClient implements DogStatsInterface
     protected $wrapped;
 
     /**
-     * @var bool
+     * @var array
      */
-    protected $enable = true;
-
     private $options;
 
     public function __construct(array $options)
     {
+        $statsd = new ClientWrapper();
+        $statsd->configure($options);
         $this->options = $options;
-        if (!isset($this->options['enable']) || $this->options['enable'] !== true) {
-            $this->wrapped = new NullDatadogClient();
-        } else {
-            $statsd = new ClientWrapper();
-            $statsd->configure($options);
-            $this->wrapped = $statsd;
-        }
-    }
-
-    /**
-     * @param bool $enable
-     */
-    public function setEnable(bool $enable): void
-    {
-        $this->enable = $enable;
+        $this->wrapped = $statsd;
     }
 
     /**
@@ -45,7 +31,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function increment(string $metrics, int $delta = 1, float $sampleRate = 1.0, array $tags = [])
     {
-        $this->enable && $this->wrapped->increment($metrics, $delta, $sampleRate, $tags);
+        $this->wrapped->increment($metrics, $delta, $sampleRate, $tags);
         return $this;
     }
 
@@ -54,7 +40,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function decrement(string $metrics, int $delta = 1, float $sampleRate = 1.0, array $tags = [])
     {
-        $this->enable && $this->wrapped->decrement($metrics, $delta, $sampleRate, $tags);
+        $this->wrapped->decrement($metrics, $delta, $sampleRate, $tags);
         return $this;
     }
 
@@ -63,7 +49,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function timing(string $metric, float $time, array $tags = [])
     {
-        $this->enable && $this->wrapped->timing($metric, $time, $tags);
+        $this->wrapped->timing($metric, $time, $tags);
         return $this;
     }
 
@@ -72,7 +58,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function time(string $metric, callable $func, array $tags = [])
     {
-        $this->enable && $this->wrapped->time($metric, $func, $tags);
+        $this->wrapped->time($metric, $func, $tags);
         return $this;
     }
 
@@ -81,7 +67,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function gauge(string $metric, int $value, array $tags = [])
     {
-        $this->enable && $this->wrapped->gauge($metric, $value, $tags);
+        $this->wrapped->gauge($metric, $value, $tags);
         return $this;
     }
 
@@ -90,7 +76,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function histogram(string $metric, float $value, float $sampleRate = 1.0, array $tags = [])
     {
-        $this->enable && $this->wrapped->histogram($metric, $value, $sampleRate, $tags);
+        $this->wrapped->histogram($metric, $value, $sampleRate, $tags);
         return $this;
     }
 
@@ -99,7 +85,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function set(string $metric, int $value, array $tags = [])
     {
-        $this->enable && $this->wrapped->set($metric, $value, $tags);
+        $this->wrapped->set($metric, $value, $tags);
         return $this;
     }
 
@@ -108,7 +94,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function event(string $title, string $text, array $metadata = [], array $tags = [])
     {
-        $this->enable && $this->wrapped->event($title, $text, $metadata, $tags);
+        $this->wrapped->event($title, $text, $metadata, $tags);
         return $this;
     }
 
@@ -117,7 +103,7 @@ class DatadogClient implements DogStatsInterface
      */
     public function serviceCheck(string $name, int $status, array $metadata = [], array $tags = [])
     {
-        $this->enable && $this->wrapped->serviceCheck($name, $status, $metadata, $tags);
+        $this->wrapped->serviceCheck($name, $status, $metadata, $tags);
         return $this;
     }
 
