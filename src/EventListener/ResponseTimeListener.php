@@ -21,7 +21,7 @@ class ResponseTimeListener
     public function onKernelTerminate()
     {
         if (null !== $this->kernel) {
-            $responseTime = round(1000 * (microtime(true) - $this->kernel->getStartTime()));
+            $responseTime = round(microtime(true) - $this->kernel->getStartTime(), 4);
             $this->dogStats->timing('http_request', $responseTime);
         }
     }

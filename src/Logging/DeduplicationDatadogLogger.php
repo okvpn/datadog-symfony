@@ -107,7 +107,10 @@ class DeduplicationDatadogLogger extends AbstractLogger
     public function clearDeduplicationStore()
     {
         $logs = $this->deduplicationLogs();
-        $this->touch();
+        if ($logs) {
+            file_put_contents($this->deduplicationStore, '');
+            @chmod($this->deduplicationStore, 0777);
+        }
 
         return $logs;
     }
