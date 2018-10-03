@@ -19,10 +19,14 @@ class PushDatadogHandlerPass implements CompilerPassInterface
             return;
         }
 
-        if ($loggerByChanel = $container->getParameter('okvpn_datadog.monolog_channels')) {
-            $loggerByChanel = [];
-        }
+        $loggerByChanel = array_map(
+            function ($channel) {
+                return sprintf('monolog.logger.%s', $channel);
+            },
+            $container->getParameter('okvpn_datadog.monolog_channels')
+        );
 
+        $loggerByChanel[] = 'monolog.logger';
         foreach ($container->findTaggedServiceIds('monolog.logger') as $id => $tags) {
             foreach ($tags as $tag) {
                 if (empty($tag['channel'])) {

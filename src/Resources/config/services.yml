@@ -1,5 +1,5 @@
 parameters:
-    okvpn_datadog.monolog_channels: ['monolog.logger']
+    okvpn_datadog.monolog_channels: []
     okvpn_datadog.logging: null
     okvpn_datadog.profiling: false
 
