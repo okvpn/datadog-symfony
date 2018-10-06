@@ -12,11 +12,47 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class OkvpnDatadogBundle extends Bundle
 {
     /**
+     * @var float
+     */
+    private $startTime;
+
+    public function __construct()
+    {
+        $this->startTime = microtime(true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function boot()
+    {
+        if (null === $this->startTime) {
+            $this->startTime = microtime(true);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function shutdown()
+    {
+        $this->startTime = null;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new SqlLoggerPass(['default']));
         $container->addCompilerPass(new PushDatadogHandlerPass());
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getStartTime(): ?float
+    {
+        return $this->startTime;
     }
 }
