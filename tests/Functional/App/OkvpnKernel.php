@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\Tests\Functional\App;
 
-use Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller\AppDatadogController;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -39,7 +38,7 @@ class OkvpnKernel extends Kernel
 
             $container->loadFromExtension('framework', [
                 'router' => [
-                    'resource' => 'kernel::loadRoutes',
+                    'resource' => 'kernel:loadRoutes',
                     'type' => 'service',
                 ],
             ]);
@@ -58,9 +57,8 @@ class OkvpnKernel extends Kernel
     {
         $routes = new RouteCollectionBuilder($loader);
 
-        $controller = AppDatadogController::class;
-        $routes->add('/', "{$controller}:index");
-        $routes->add('/exception', "{$controller}:exception");
+        $routes->add('/', "app.controller.base_controller:index");
+        $routes->add('/exception', "app.controller.base_controller:exception");
 
         return $routes->build();
     }

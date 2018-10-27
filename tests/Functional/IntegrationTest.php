@@ -71,9 +71,17 @@ class IntegrationTest extends WebTestCase
         } catch (\Exception $exception) {}
 
         list($title, $desc) = $decorator->getLastEvent();
+        $desc = $this->processDatadogArtifact($desc);
+
         self::assertNotEmpty($decorator->getRecords());
         self::assertContains('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
 
+        $decorator->clear();
+        try {
+            $this->client->request('GET', '/exception');
+        } catch (\Exception $exception) {}
+        list($title, $desc) = $decorator->getLastEvent();
+        self::assertNull($desc, 'The duplication logs must be skips');
     }
 
     /**
@@ -169,5 +177,20 @@ class IntegrationTest extends WebTestCase
         }
 
         return trim($content);
+    }
+
+    protected function processDatadogArtifact(string $message): string
+    {
+        preg_match('#artifact code: (\w{40})#i', $message, $matches);
+
+        if (isset($matches[1])) {
+            $logDir = $this->client->getContainer()->getParameter('kernel.logs_dir');
+            $fileName = $logDir . '/' . 'datadog-' . $matches[1] . '.log';
+            if (file_exists($fileName)) {
+                return file_get_contents($fileName);
+            }
+        }
+
+        return $message;
     }
 }

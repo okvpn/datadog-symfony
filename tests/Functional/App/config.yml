@@ -9,7 +9,7 @@ framework:
 doctrine:
     dbal:
         driver: 'pdo_sqlite'
-        path: '%kernel.project_dir%/var/test.db'
+        path: '%kernel.root_dir%/var/test.db'
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
@@ -49,3 +49,7 @@ services:
         class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Command\DatadogExceptionCommand
         tags:
             - { name: console.command }
+
+    app.controller.base_controller:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller\AppDatadogController
+        public: true
