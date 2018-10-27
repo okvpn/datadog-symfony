@@ -56,5 +56,5 @@ services:
         arguments:
             - ['Cookie:', 'X-Wsse:', 'Authorization:']
         calls:
-            - [setRequestStack, ['@request_stack']]
-            - [setTokenStorage, ['@security.token_storage']]
+            - [setRequestStack, ['@?request_stack']]
+            - [setTokenStorage, ['@?security.token_storage']]

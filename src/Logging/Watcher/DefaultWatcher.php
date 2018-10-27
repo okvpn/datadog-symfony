@@ -28,7 +28,7 @@ class DefaultWatcher implements ContextWatcherInterface
     /**
      * @param RequestStack $requestStack
      */
-    public function setRequestStack(RequestStack $requestStack): void
+    public function setRequestStack(RequestStack $requestStack = null): void
     {
         $this->requestStack = $requestStack;
     }
@@ -36,7 +36,7 @@ class DefaultWatcher implements ContextWatcherInterface
     /**
      * @param TokenStorageInterface $tokenStorage
      */
-    public function setTokenStorage(TokenStorageInterface $tokenStorage): void
+    public function setTokenStorage(TokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
