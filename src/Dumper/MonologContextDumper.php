@@ -38,24 +38,28 @@ class MonologContextDumper implements ContextDumperInterface
         }
 
         $strOutput = '';
-        try {
-            $cloner = new VarCloner();
-            $dumper = new CliDumper();
-            $cloner->setMaxString(static::MAX_STRING_LENGTH);
-            $cloner->setMaxItems(static::MAX_CONTEXT_ITEMS);
-            $data = $cloner->cloneVar($context);
-            $data = $data->withMaxDepth(3)
-                ->withRefHandles(false);
-            $dumper->dump(
-                $data,
-                function ($line, $depth) use (&$strOutput) {
-                    // A negative depth means "end of dump"
-                    if ($depth >= 0) {
-                        $strOutput .= str_repeat('  ', $depth).$line."\n";
+
+        // symfony/var-dumper is optional dependency
+        if (class_exists(CliDumper::class)) {
+            try {
+                $cloner = new VarCloner();
+                $dumper = new CliDumper();
+                $cloner->setMaxString(static::MAX_STRING_LENGTH);
+                $cloner->setMaxItems(static::MAX_CONTEXT_ITEMS);
+                $data = $cloner->cloneVar($context);
+                $data = $data->withMaxDepth(3)
+                    ->withRefHandles(false);
+                $dumper->dump(
+                    $data,
+                    function ($line, $depth) use (&$strOutput) {
+                        // A negative depth means "end of dump"
+                        if ($depth >= 0) {
+                            $strOutput .= str_repeat('  ', $depth).$line."\n";
+                        }
                     }
-                }
-            );
-        } catch (\Throwable $e) {
+                );
+            } catch (\Throwable $e) {
+            }
         }
 
         if ($exception) {

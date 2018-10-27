@@ -1,0 +1,55 @@
+framework:
+    secret: test
+    test: ~
+    default_locale: en
+    profiler: { collect: true }
+    session:
+        storage_id:     session.storage.mock_file
+
+doctrine:
+    dbal:
+        driver: 'pdo_sqlite'
+        path: '%kernel.root_dir%/var/test.db'
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+
+monolog:
+    handlers:
+        nested:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+
+security:
+    providers:
+        in_memory:
+            memory: ~
+    firewalls:
+        main:
+            anonymous: ~
+
+okvpn_datadog:
+    profiling: true
+    namespace: app
+
+parameters:
+    request_listener.http_port: 80
+    request_listener.https_port: 443
+
+services:
+    okvpn_datadog.client_test_decorator:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Client\DebugDatadogClient
+        decorates: okvpn_datadog.client
+        public: true
+        arguments: ['@okvpn_datadog.client_test_decorator.inner']
+
+    app.command.exception_command:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Command\DatadogExceptionCommand
+        tags:
+            - { name: console.command }
+
+    app.controller.base_controller:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller\AppDatadogController
+        public: true
