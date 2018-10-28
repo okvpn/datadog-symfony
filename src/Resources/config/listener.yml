@@ -11,7 +11,7 @@ services:
 
     okvpn_datadog.timming_http_listener:
         class: Okvpn\Bundle\DatadogBundle\EventListener\ResponseTimeListener
-        arguments: ['@kernel', '@okvpn_datadog.client']
+        arguments: ['@okvpn_datadog.client', '@?kernel']
         tags:
             - { name: kernel.event_listener, event: kernel.terminate,  method: onKernelTerminate }
 

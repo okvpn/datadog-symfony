@@ -38,7 +38,7 @@ class DatadogHandler extends AbstractProcessingHandler
                 }
             }
 
-            if ($exception && false === $this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception)) {
+            if ($exception && false === $this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception) && false === $this->skipCaptureService->shouldMessageCaptureBeSkipped($record['message'])) {
                 $this->errorBag->pushError($record);
             }
         }

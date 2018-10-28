@@ -9,11 +9,17 @@ framework:
 doctrine:
     dbal:
         driver: 'pdo_sqlite'
-        path: '%kernel.root_dir%/var/test.db'
+        path: '%kernel.root_dir%/test.db'
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.root_dir%/../Entity'
+                prefix: 'Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity'
 
 monolog:
     handlers:
@@ -33,6 +39,14 @@ security:
 okvpn_datadog:
     profiling: true
     namespace: app
+    dedup_keep_time: 5
+    handle_exceptions:
+        skip_instanceof:
+            - 'Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Command\DemoDatadogExceptionInterface'
+        skip_capture:
+            - 'UnderflowException'
+        skip_wildcard:
+            - '*entity aliases failed*'
 
 parameters:
     request_listener.http_port: 80
@@ -47,9 +61,12 @@ services:
 
     app.command.exception_command:
         class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Command\DatadogExceptionCommand
+        arguments: ['@logger']
         tags:
             - { name: console.command }
 
     app.controller.base_controller:
         class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller\AppDatadogController
         public: true
+        calls:
+            - [setContainer, ['@service_container']]
