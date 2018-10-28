@@ -59,6 +59,7 @@ class OkvpnKernel extends Kernel
 
         $routes->add('/', "app.controller.base_controller:index");
         $routes->add('/exception', "app.controller.base_controller:exception");
+        $routes->add('/entity', "app.controller.base_controller:entity");
 
         return $routes->build();
     }

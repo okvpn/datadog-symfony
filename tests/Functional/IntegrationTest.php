@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\Tests\Functional;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -15,6 +17,20 @@ class IntegrationTest extends WebTestCase
 {
     /** @var Client */
     private $client;
+
+    /**
+     * Manage schema and cleanup chores
+     */
+    public static function setUpBeforeClass()
+    {
+        static::deleteTmpDir();
+        $kernel = static::createClient()->getKernel();
+        /** @var EntityManagerInterface $em */
+        $em = $kernel->getContainer()->get('doctrine')->getManager();
+        $schemaTool = new SchemaTool($em);
+        $metadata = $em->getMetadataFactory()->getAllMetadata();
+        $schemaTool->createSchema($metadata);
+    }
 
     /**
      * {@inheritdoc}
@@ -37,51 +53,97 @@ class IntegrationTest extends WebTestCase
 
     public function testLogRequest()
     {
-        $decorator = $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
-        self::assertEmpty($decorator->getRecords());
+        self::assertEmpty($this->getClientDecorator()->getRecords());
 
         $this->client->request('GET', '/');
         $this->client->getResponse();
 
-        self::assertNotEmpty($decorator->getRecords());
+        self::assertNotEmpty($this->getClientDecorator()->getRecords());
+    }
+
+    public function testDoctrineLog()
+    {
+        $this->client->request('GET', '/entity');
+        $this->client->getResponse();
+
+        $records = $this->getClientDecorator()->getRecords();
+        self::assertNotEmpty($records);
+
+        $args = array_column($records, 'args');
+        $metricsName = array_column($args, 0);
+        self::assertContains('doctrine', $metricsName);
     }
 
     public function testHandleConsoleException()
     {
-        $decorator = $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
-        self::assertEmpty($decorator->getRecords());
+        self::assertEmpty($this->getClientDecorator()->getRecords());
 
         try {
             $this->runCommand('app:exception');
         } catch (\Throwable $exception) {}
 
-        list($title, $desc) = $decorator->getLastEvent();
+        list($title, $desc) = $this->getClientDecorator()->getLastEvent();
 
-        self::assertNotEmpty($decorator->getRecords());
+        self::assertNotEmpty($this->getClientDecorator()->getRecords());
         self::assertContains('Call to undefined function function_do_not_exists', $desc);
     }
 
-    public function testHandleHttpException()
+    public function testDeduplicationLogger()
     {
-        $decorator = $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
-        self::assertEmpty($decorator->getRecords());
+        self::assertEmpty($this->getClientDecorator()->getRecords());
 
+        for ($i = 0; $i <= 2; $i++) {
+            $this->getClientDecorator()->clear();
+            try {
+                $this->client->request('GET', '/exception');
+            } catch (\Exception $exception) {}
+
+            list($title, $desc) = $this->getClientDecorator()->getLastEvent();
+            $desc = $desc ? $this->processDatadogArtifact($desc) : $desc;
+            switch ($i) {
+                case 0:
+                    self::assertNotEmpty($this->getClientDecorator()->getRecords());
+                    self::assertContains('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
+                    sleep(1);
+                    break;
+                case 1:
+                    self::assertNull($desc, 'The duplication logs must be skips');
+                    sleep(5);
+                    break;
+                case 2:
+                    self::assertNotNull($desc, 'GC must remove duplication logs after 5 sec.');
+                    break;
+            }
+        }
+    }
+
+    /**
+     * @dataProvider filterExceptionDataProvider
+     *
+     * @param string $filterOption
+     * @param bool $isSkip
+     */
+    public function testFilterException(string $filterOption, bool $isSkip)
+    {
         try {
-            $this->client->request('GET', '/exception');
-        } catch (\Exception $exception) {}
+            $this->runCommand('app:exception', ['--filter' => $filterOption]);
+        } catch (\Throwable $exception) {}
 
-        list($title, $desc) = $decorator->getLastEvent();
-        $desc = $this->processDatadogArtifact($desc);
+        list($title, $desc) = $this->getClientDecorator()->getLastEvent();
+        self::assertSame($isSkip, empty($desc));
+    }
 
-        self::assertNotEmpty($decorator->getRecords());
-        self::assertContains('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
+    public function filterExceptionDataProvider()
+    {
+        yield 'Filter by instanceof' => ['skip_instanceof', true];
 
-        $decorator->clear();
-        try {
-            $this->client->request('GET', '/exception');
-        } catch (\Exception $exception) {}
-        list($title, $desc) = $decorator->getLastEvent();
-        self::assertNull($desc, 'The duplication logs must be skips');
+        yield 'Filter by capture' => ['skip_capture', true];
+
+        yield 'Filter by wildcard' => ['skip_wildcard', true];
+
+        yield 'Test trigger on logger context' => ['test_logger', false];
+
+        yield 'Test filter by log message' => ['test_logger_wildcard', true];
     }
 
     /**
@@ -89,10 +151,9 @@ class IntegrationTest extends WebTestCase
      */
     protected function tearDown()
     {
-        $decorator = $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
         $logger = $this->client->getContainer()->get('okvpn_datadog.logger');
 
-        $decorator->clear();
+        $this->getClientDecorator()->clear();
         $logger->clearDeduplicationStore();
     }
 
@@ -192,5 +253,13 @@ class IntegrationTest extends WebTestCase
         }
 
         return $message;
+    }
+
+    /**
+     * @return object|App\Client\DebugDatadogClient
+     */
+    protected function getClientDecorator()
+    {
+        return $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
     }
 }

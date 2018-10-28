@@ -13,7 +13,7 @@ class ResponseTimeListener
     private $kernel;
     private $dogStats;
 
-    public function __construct(KernelInterface $kernel = null, DogStatsInterface $dogStats)
+    public function __construct(DogStatsInterface $dogStats, KernelInterface $kernel = null)
     {
         $this->kernel = $kernel;
         $this->dogStats = $dogStats;
