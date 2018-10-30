@@ -76,7 +76,7 @@ class ClientWrapper extends Client
      * Get option
      *
      * @param string $option
-     * @param null $default
+     * @param null|mixed $default
      * @return mixed
      */
     public function getOption(string $option, $default = null)
