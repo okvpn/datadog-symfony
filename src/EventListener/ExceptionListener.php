@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleEvent;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -28,11 +29,11 @@ class ExceptionListener
     }
 
     /**
-     * @param GetResponseForExceptionEvent $event
+     * @param GetResponseForExceptionEvent|ExceptionEvent $event
      */
-    public function onKernelException(GetResponseForExceptionEvent $event): void
+    public function onKernelException($event): void
     {
-        $exception = $event->getException();
+        $exception = method_exists($event, 'getThrowable') ? $event->getThrowable() : $event->getException();
         if ($this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception)) {
             return;
         }

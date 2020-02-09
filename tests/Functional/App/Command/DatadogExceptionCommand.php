@@ -57,5 +57,7 @@ class DatadogExceptionCommand extends Command
             default:
                 \function_do_not_exists();
         }
+
+        return 0;
     }
 }

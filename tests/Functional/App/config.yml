@@ -9,7 +9,7 @@ framework:
 doctrine:
     dbal:
         driver: 'pdo_sqlite'
-        path: '%kernel.root_dir%/test.db'
+        path: '%kernel.project_dir%/test.db'
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
@@ -18,7 +18,7 @@ doctrine:
             App:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.root_dir%/../Entity'
+                dir: '%kernel.project_dir%/Entity'
                 prefix: 'Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity'
 
 monolog:
@@ -70,3 +70,6 @@ services:
         public: true
         calls:
             - [setContainer, ['@service_container']]
+
+    Okvpn\Bundle\DatadogBundle\Tests\Functional\App\AppKernelRouting:
+        tags: [routing.route_loader]
