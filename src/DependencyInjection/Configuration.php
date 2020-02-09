@@ -19,8 +19,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('okvpn_datadog');
+        $treeBuilder = new TreeBuilder('okvpn_datadog');
+        $rootNode = \method_exists($treeBuilder, 'getRootNode') ?
+            $treeBuilder->getRootNode() :
+            $treeBuilder->root('okvpn_datadog');
 
         $rootNode->children()
             ->arrayNode('handle_exceptions')

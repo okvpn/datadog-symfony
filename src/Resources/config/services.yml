@@ -22,6 +22,9 @@ services:
         arguments: [~]
         public: true
 
+    Okvpn\Bundle\DatadogBundle\Client\DogStatsInterface:
+        alias: okvpn_datadog.client
+
     okvpn_datadog.logger.artifact_storage:
         class: Okvpn\Bundle\DatadogBundle\Logging\LocalArtifactsStorage
         arguments: ['%kernel.logs_dir%']

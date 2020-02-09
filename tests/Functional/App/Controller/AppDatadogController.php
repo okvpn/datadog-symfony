@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller;
 
 use Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity\DatadogUser;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AppDatadogController extends Controller
+trait AppDatadogControllerTrait
 {
     public function index()
     {
@@ -31,5 +32,17 @@ class AppDatadogController extends Controller
         $em->flush();
 
         return new JsonResponse(['status' => true]);
+    }
+}
+
+if (class_exists(AbstractController::class)) {
+    class AppDatadogController extends AbstractController
+    {
+        use AppDatadogControllerTrait;
+    }
+} else {
+    class AppDatadogController extends Controller
+    {
+        use AppDatadogControllerTrait;
     }
 }

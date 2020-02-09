@@ -10,8 +10,29 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
+trait OkvpnKernelTrait
+{
+
+    /**
+     * @param LoaderInterface $loader
+     * @return RouteCollection
+     */
+    public function loadRoutes(LoaderInterface $loader)
+    {
+        $routes = new RouteCollectionBuilder($loader);
+
+        $routes->add('/', "app.controller.base_controller:index");
+        $routes->add('/exception', "app.controller.base_controller:exception");
+        $routes->add('/entity', "app.controller.base_controller:entity");
+
+        return $routes->build();
+    }
+}
+
 class OkvpnKernel extends Kernel
 {
+    use OkvpnKernelTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -35,33 +56,15 @@ class OkvpnKernel extends Kernel
             $container->setParameter('container.autowiring.strict_mode', true);
             $container->setParameter('container.dumper.inline_class_loader', true);
             $container->addObjectResource($this);
-
             $container->loadFromExtension('framework', [
                 'router' => [
-                    'resource' => 'kernel:loadRoutes',
+                    'resource' => self::VERSION_ID > 40000 ? AppKernelRouting::class . '::loadRoutes' : 'kernel:loadRoutes',
                     'type' => 'service',
                 ],
             ]);
         });
 
-
-
         $loader->load(__DIR__.'/config.yml');
-    }
-
-    /**
-     * @param LoaderInterface $loader
-     * @return RouteCollection
-     */
-    public function loadRoutes(LoaderInterface $loader)
-    {
-        $routes = new RouteCollectionBuilder($loader);
-
-        $routes->add('/', "app.controller.base_controller:index");
-        $routes->add('/exception', "app.controller.base_controller:exception");
-        $routes->add('/entity', "app.controller.base_controller:entity");
-
-        return $routes->build();
     }
 
     /**

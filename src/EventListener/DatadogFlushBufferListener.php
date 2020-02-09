@@ -7,7 +7,6 @@ namespace Okvpn\Bundle\DatadogBundle\EventListener;
 use Okvpn\Bundle\DatadogBundle\Logging\ErrorBag;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 class DatadogFlushBufferListener
 {
@@ -31,10 +30,7 @@ class DatadogFlushBufferListener
         $this->errorBag = $errorBag;
     }
 
-    /**
-     * @param PostResponseEvent $event
-     */
-    public function onKernelTerminate(PostResponseEvent $event): void
+    public function onKernelTerminate(): void
     {
         if ($record = $this->errorBag->rootError()) {
             $this->errorBag->flush();

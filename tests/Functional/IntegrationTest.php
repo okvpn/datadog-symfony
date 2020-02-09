@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -15,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class IntegrationTest extends WebTestCase
 {
-    /** @var Client */
+    /** @var Client|KernelBrowser */
     private $client;
 
     /**
@@ -37,6 +38,10 @@ class IntegrationTest extends WebTestCase
      */
     protected function setUp()
     {
+        if (property_exists($this, 'booted') && self::$booted) {
+            parent::tearDown();
+        }
+
         $this->client = static::createClient();
     }
 
@@ -127,7 +132,9 @@ class IntegrationTest extends WebTestCase
     {
         try {
             $this->runCommand('app:exception', ['--filter' => $filterOption]);
-        } catch (\Throwable $exception) {}
+        } catch (\Throwable $exception) {
+
+        }
 
         list($title, $desc) = $this->getClientDecorator()->getLastEvent();
         self::assertSame($isSkip, empty($desc));
@@ -149,7 +156,7 @@ class IntegrationTest extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $logger = $this->client->getContainer()->get('okvpn_datadog.logger');
 
@@ -170,11 +177,13 @@ class IntegrationTest extends WebTestCase
      */
     protected static function deleteTmpDir()
     {
-        if (!file_exists($dir = __DIR__ .'/App/var')) {
-            return;
-        }
         $fs = new Filesystem();
-        $fs->remove($dir);
+        try {
+            $fs->remove(__DIR__ .'/App/var');
+        } catch (\Throwable $exception) {}
+        try {
+            $fs->remove(__DIR__ .'/App/test.db');
+        } catch (\Throwable $exception) {}
     }
 
     /**
