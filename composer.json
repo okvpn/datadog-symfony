@@ -23,7 +23,7 @@
         "php":">=7.2",
         "symfony/framework-bundle": "^3.4 || ^4.0 || ^5.0",
         "symfony/yaml": "^3.4 || ^4.0 || ^5.0",
-        "graze/dog-statsd": "^0.4"
+        "graze/dog-statsd": "^0.4 || ^1.0"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
