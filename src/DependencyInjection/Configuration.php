@@ -52,7 +52,6 @@ class Configuration implements ConfigurationInterface
                 ->defaultValue('127.0.0.1')
             ->end()
             ->integerNode('port')
-                ->min(1)->max(65535)
                 ->defaultValue(8125)
             ->end()
             ->scalarNode('namespace')
