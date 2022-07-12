@@ -22,7 +22,7 @@ class IntegrationTest extends WebTestCase
     /**
      * Manage schema and cleanup chores
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::deleteTmpDir();
         $kernel = static::createClient()->getKernel();
@@ -36,7 +36,7 @@ class IntegrationTest extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (property_exists($this, 'booted') && self::$booted) {
             parent::tearDown();
@@ -167,7 +167,7 @@ class IntegrationTest extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::deleteTmpDir();
     }
@@ -189,7 +189,7 @@ class IntegrationTest extends WebTestCase
     /**
      * @return string
      */
-    protected static function getKernelClass()
+    protected static function getKernelClass(): string
     {
         require_once __DIR__.'/App/OkvpnKernel.php';
 

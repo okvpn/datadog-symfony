@@ -4,7 +4,7 @@ framework:
     default_locale: en
     profiler: { collect: true }
     session:
-        storage_id:     session.storage.mock_file
+        storage_factory_id:     session.storage.mock_file
 
 doctrine:
     dbal:
@@ -34,7 +34,7 @@ security:
             memory: ~
     firewalls:
         main:
-            anonymous: ~
+            lazy: true
 
 okvpn_datadog:
     profiling: true
