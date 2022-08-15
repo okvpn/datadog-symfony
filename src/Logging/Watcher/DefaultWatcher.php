@@ -12,51 +12,43 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class DefaultWatcher implements ContextWatcherInterface
 {
-    private $skipHeaders;
-    private $requestStack;
-    private $tokenStorage;
+    private ?RequestStack $requestStack;
+    private ?TokenStorageInterface $tokenStorage;
 
     /**
-     * @param array $skipHttpHeaders
+     * @param string[] $skipHttpHeaders
      */
-    public function __construct(array $skipHttpHeaders = [])
+    public function __construct(private array $skipHttpHeaders = [])
     {
         // For security skip 'Cookie:', 'X-Wsse:', 'Authorization:' headers
-        $this->skipHeaders = $skipHttpHeaders;
     }
 
-    /**
-     * @param RequestStack $requestStack
-     */
     public function setRequestStack(RequestStack $requestStack = null): void
     {
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * @param TokenStorageInterface $tokenStorage
-     */
     public function setTokenStorage(TokenStorageInterface $tokenStorage = null): void
     {
         $this->tokenStorage = $tokenStorage;
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function watch(): array
     {
         $context = [];
         if ($this->tokenStorage instanceof TokenStorageInterface) {
             $token = $this->tokenStorage->getToken();
-            if (null  !== $token) {
+            if (null !== $token) {
                 $context['token'] = $token->serialize();
             }
         }
 
         if ($this->requestStack instanceof RequestStack && $request = $this->requestStack->getCurrentRequest()) {
             $request = preg_replace("/\r\n/", "\n", (string) $request);
-            foreach ($this->skipHeaders as $filteredHeader) {
+            foreach ($this->skipHttpHeaders as $filteredHeader) {
                 $request = preg_replace('#'. $filteredHeader .".+\n#i", '', $request);
             }
             $context['request'] = $request;

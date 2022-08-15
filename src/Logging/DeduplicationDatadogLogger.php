@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
 
 declare(strict_types=1);
 
@@ -15,28 +15,13 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class DeduplicationDatadogLogger extends AbstractLogger
 {
-    private $statsd;
-    private $deduplicationKeepTime;
-    private $watcher;
-    private $artifactStorage;
-    private $exceptionHashService;
-    private $contextDumper;
-    private $fs;
+    private Filesystem $fs;
 
-    /**
-     * @var bool 
-     */
-    protected $gc = false;
+    protected bool $gc = false;
 
-    /**
-     * @var string 
-     */
-    protected $deduplicationStore;
+    protected string $deduplicationStore;
 
-    /**
-     * @var array
-     */
-    protected $formatLevelMap = [
+    protected array $formatLevelMap = [
         LogLevel::EMERGENCY => DogStatsInterface::ALERT_ERROR,
         LogLevel::ALERT => DogStatsInterface::ALERT_ERROR,
         LogLevel::CRITICAL => DogStatsInterface::ALERT_ERROR,
@@ -47,14 +32,14 @@ class DeduplicationDatadogLogger extends AbstractLogger
         LogLevel::DEBUG => DogStatsInterface::ALERT_INFO,
     ];
     
-    public function __construct(DogStatsInterface $statsd, ArtifactsStorageInterface $artifactStorage, ContextWatcherInterface $watcher, ContextDumperInterface $contextDumper, ExceptionHashService $exceptionHashService, string $deduplicationStore = null, int $deduplicationKeepTime = 86400 * 7)
+    public function __construct(private DogStatsInterface         $statsd,
+                                private ArtifactsStorageInterface $artifactStorage,
+                                private ContextWatcherInterface   $watcher,
+                                private ContextDumperInterface    $contextDumper,
+                                private ExceptionHashService      $exceptionHashService,
+                                string                            $deduplicationStore = null,
+                                private int                       $deduplicationKeepTime = 86400 * 7)
     {
-        $this->statsd = $statsd;
-        $this->artifactStorage = $artifactStorage;
-        $this->watcher = $watcher;
-        $this->deduplicationKeepTime = $deduplicationKeepTime;
-        $this->contextDumper = $contextDumper;
-        $this->exceptionHashService = $exceptionHashService;
         $deduplicationFileName = '/datadog-dedup-' . substr(md5(__FILE__), 0, 8) .'.log';
         $this->deduplicationStore = $deduplicationStore === null ? sys_get_temp_dir() . '/' . $deduplicationFileName : $deduplicationStore . '/' . $deduplicationFileName;
         $this->fs = new Filesystem();
@@ -62,8 +47,9 @@ class DeduplicationDatadogLogger extends AbstractLogger
 
     /**
      * {@inheritdoc}
+     * @noinspection PhpMultipleClassDeclarationsInspection
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, string|\Stringable $message, array $context = []): void
     {
         $this->touch();
         $context = array_merge(
@@ -104,7 +90,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
     /**
      * @return array
      */
-    public function clearDeduplicationStore()
+    public function clearDeduplicationStore(): array
     {
         $logs = $this->deduplicationLogs();
         if ($logs) {
@@ -118,7 +104,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
     /**
      * @return array
      */
-    public function deduplicationLogs()
+    public function deduplicationLogs(): array
     {
         if (!file_exists($this->deduplicationStore)) {
             return [];
@@ -159,7 +145,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
         return false;
     }
 
-    protected function collectLogs()
+    protected function collectLogs(): void
     {
         if (!file_exists($this->deduplicationStore)) {
             return;
@@ -189,12 +175,12 @@ class DeduplicationDatadogLogger extends AbstractLogger
         $this->gc = false;
     }
 
-    protected function appendRecord(DatadogEvent $event, string $hash)
+    protected function appendRecord(DatadogEvent $event, string $hash): void
     {
         file_put_contents($this->deduplicationStore, $event->getDatetime() . ':' . $hash . ':' . preg_replace('{[\r\n].*}', '', $event->getShortMessage()) . "\n", FILE_APPEND);
     }
 
-    protected function touch()
+    protected function touch(): void
     {
         $path = dirname($this->deduplicationStore);
         if (!is_dir($path)) {

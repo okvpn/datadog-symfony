@@ -6,28 +6,31 @@ namespace Okvpn\Bundle\DatadogBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Bundle\FrameworkBundle\Client;
+use Doctrine\ORM\Tools\ToolsException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class IntegrationTest extends WebTestCase
 {
-    /** @var Client|KernelBrowser */
-    private $client;
+    private KernelBrowser $client;
 
     /**
      * Manage schema and cleanup chores
+     * @throws ToolsException
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::deleteTmpDir();
         $kernel = static::createClient()->getKernel();
+
         /** @var EntityManagerInterface $em */
         $em = $kernel->getContainer()->get('doctrine')->getManager();
+
         $schemaTool = new SchemaTool($em);
         $metadata = $em->getMetadataFactory()->getAllMetadata();
         $schemaTool->createSchema($metadata);
@@ -36,7 +39,7 @@ class IntegrationTest extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         if (property_exists($this, 'booted') && self::$booted) {
             parent::tearDown();
@@ -76,6 +79,7 @@ class IntegrationTest extends WebTestCase
 
         $args = array_column($records, 'args');
         $metricsName = array_column($args, 0);
+
         self::assertContains('doctrine', $metricsName);
     }
 
@@ -90,7 +94,7 @@ class IntegrationTest extends WebTestCase
         list($title, $desc) = $this->getClientDecorator()->getLastEvent();
 
         self::assertNotEmpty($this->getClientDecorator()->getRecords());
-        self::assertContains('Call to undefined function function_do_not_exists', $desc);
+        self::assertStringContainsString('Call to undefined function function_do_not_exists', $desc);
     }
 
     public function testDeduplicationLogger()
@@ -108,7 +112,7 @@ class IntegrationTest extends WebTestCase
             switch ($i) {
                 case 0:
                     self::assertNotEmpty($this->getClientDecorator()->getRecords());
-                    self::assertContains('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
+                    self::assertStringContainsString('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
                     sleep(1);
                     break;
                 case 1:
@@ -124,9 +128,6 @@ class IntegrationTest extends WebTestCase
 
     /**
      * @dataProvider filterExceptionDataProvider
-     *
-     * @param string $filterOption
-     * @param bool $isSkip
      */
     public function testFilterException(string $filterOption, bool $isSkip)
     {
@@ -140,7 +141,7 @@ class IntegrationTest extends WebTestCase
         self::assertSame($isSkip, empty($desc));
     }
 
-    public function filterExceptionDataProvider()
+    public function filterExceptionDataProvider(): \Generator
     {
         yield 'Filter by instanceof' => ['skip_instanceof', true];
 
@@ -167,15 +168,12 @@ class IntegrationTest extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         static::deleteTmpDir();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected static function deleteTmpDir()
+    protected static function deleteTmpDir(): void
     {
         $fs = new Filesystem();
         try {
@@ -186,10 +184,7 @@ class IntegrationTest extends WebTestCase
         } catch (\Throwable $exception) {}
     }
 
-    /**
-     * @return string
-     */
-    protected static function getKernelClass()
+    protected static function getKernelClass(): string
     {
         require_once __DIR__.'/App/OkvpnKernel.php';
 
@@ -199,15 +194,12 @@ class IntegrationTest extends WebTestCase
     /**
      * Builds up the environment to run the given command.
      *
-     * @param string $name
-     * @param array $params
      * @param bool $cleanUp strip new lines and multiple spaces, removes dependency on terminal columns
-     * @param bool $exceptionOnError
-     *
-     * @return string
+     * @throws \Exception
      */
-    protected function runCommand($name, array $params = [], $cleanUp = true, $exceptionOnError = false): string
+    protected function runCommand(string $name, array $params = [], bool $cleanUp = true, bool $exceptionOnError = false): string
     {
+        /** @var KernelInterface $kernel */
         $kernel = $this->client->getContainer()->get('kernel');
 
         $application = new Application($kernel);
@@ -264,11 +256,10 @@ class IntegrationTest extends WebTestCase
         return $message;
     }
 
-    /**
-     * @return object|App\Client\DebugDatadogClient
-     */
-    protected function getClientDecorator()
+    protected function getClientDecorator(): App\Client\DebugDatadogClient
     {
-        return $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
+        /** @var App\Client\DebugDatadogClient $testDecorator */
+        $testDecorator = $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
+        return $testDecorator;
     }
 }

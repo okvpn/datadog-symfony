@@ -10,16 +10,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class ResponseTimeListener
 {
-    private $kernel;
-    private $dogStats;
+    public function __construct(private DogStatsInterface $dogStats, private ?KernelInterface $kernel = null)
+    {}
 
-    public function __construct(DogStatsInterface $dogStats, KernelInterface $kernel = null)
-    {
-        $this->kernel = $kernel;
-        $this->dogStats = $dogStats;
-    }
-
-    public function onKernelTerminate()
+    public function onKernelTerminate(): void
     {
         if (null !== $this->kernel) {
             if ($this->kernel->getStartTime() > 0) {

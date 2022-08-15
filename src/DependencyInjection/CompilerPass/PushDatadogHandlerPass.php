@@ -19,6 +19,7 @@ class PushDatadogHandlerPass implements CompilerPassInterface
             return;
         }
 
+        /** @var string[] $loggerByChanel */
         $loggerByChanel = array_map(
             function ($channel) {
                 return sprintf('monolog.logger.%s', $channel);

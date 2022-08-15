@@ -4,7 +4,11 @@ framework:
     default_locale: en
     profiler: { collect: true }
     session:
-        storage_id:     session.storage.mock_file
+        #handler_id: null
+        #cookie_secure: auto
+        #cookie_samesite: lax
+        storage_factory_id: session.storage.factory.mock_file
+    http_method_override: false
 
 doctrine:
     dbal:
@@ -17,7 +21,7 @@ doctrine:
         mappings:
             App:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/Entity'
                 prefix: 'Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity'
 
@@ -34,7 +38,7 @@ security:
             memory: ~
     firewalls:
         main:
-            anonymous: ~
+            lazy: ~
 
 okvpn_datadog:
     profiling: true
@@ -53,6 +57,7 @@ parameters:
     request_listener.https_port: 443
 
 services:
+
     okvpn_datadog.client_test_decorator:
         class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Client\DebugDatadogClient
         decorates: okvpn_datadog.client

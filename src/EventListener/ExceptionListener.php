@@ -8,32 +8,16 @@ use Okvpn\Bundle\DatadogBundle\Services\SkipCaptureService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleEvent;
-use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Kernel;
 
 class ExceptionListener
 {
-    private $logger;
-    private $skipCaptureService;
+    public function __construct(private LoggerInterface $logger, private SkipCaptureService $skipCaptureService)
+    {}
 
-    /**
-     * @param LoggerInterface $logger
-     * @param SkipCaptureService $skipCaptureService
-     */
-    public function __construct(LoggerInterface $logger, SkipCaptureService $skipCaptureService)
+    public function onKernelException(ExceptionEvent $event): void
     {
-        $this->logger = $logger;
-        $this->skipCaptureService = $skipCaptureService;
-    }
-
-    /**
-     * @param GetResponseForExceptionEvent|ExceptionEvent $event
-     */
-    public function onKernelException($event): void
-    {
-        $exception = method_exists($event, 'getThrowable') ? $event->getThrowable() : $event->getException();
+        $exception = $event->getThrowable();
         if ($this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception)) {
             return;
         }
@@ -41,21 +25,13 @@ class ExceptionListener
         $this->captureException($exception, ['error:http']);
     }
 
-    /**
-     * @param ConsoleEvent|ConsoleExceptionEvent $event
-     */
-    public function onConsoleError(ConsoleEvent $event)
+    public function onConsoleError(ConsoleEvent $event): void
     {
         $command = $event->getCommand();
         $exception = null;
-        if (Kernel::VERSION_ID > 30300) {
-            if ($event instanceof ConsoleErrorEvent) {
-                $exception = $event->getError();
-            }
-        } else {
-            if ($event instanceof ConsoleExceptionEvent) {
-                $exception = $event->getException();
-            }
+
+        if ($event instanceof ConsoleErrorEvent) {
+           $exception = $event->getError();
         }
 
         if (!$exception || $this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception) || $this->skipCaptureService->shouldMessageCaptureBeSkipped($command->getName())) {
@@ -70,7 +46,10 @@ class ExceptionListener
         $this->captureException($exception, $tags);
     }
 
-    private function captureException(\Throwable $throwable, $tags)
+    /**
+     * @param string[] $tags
+     */
+    private function captureException(\Throwable $throwable, array $tags): void
     {
         $this->logger->error($throwable->getMessage(), ['exception' => $throwable, 'tags' => $tags]);
     }

@@ -6,31 +6,21 @@ namespace Okvpn\Bundle\DatadogBundle\Services;
 
 class SkipCaptureService
 {
-    /** @var ExceptionHashService */
-    private $hashService;
+    private array $skipCapture;
 
-    /** @var array */
-    private $skipCapture;
+    private array $skipCommand;
 
-    /** @var array */
-    private $skipCommand;
+    private array $skipInstanceof;
 
-    /** @var array */
-    private $skipInstanceof;
+    private array $skipHash;
 
-    /** @var array */
-    private $skipHash;
-
-    /** @var array */
-    private $skipWildcard;
+    private array $skipWildcard;
 
     /**
-     * @param ExceptionHashService $hashService
-     * @param array $skipConfig
+     * @param array<string, mixed> $skipConfig
      */
-    public function __construct(ExceptionHashService $hashService, array $skipConfig)
+    public function __construct(private ExceptionHashService $hashService, array $skipConfig)
     {
-        $this->hashService = $hashService;
         $this->skipCapture = $skipConfig['skip_capture'] ?? [];
         $this->skipCommand = $skipConfig['skip_command'] ?? [];
         $this->skipInstanceof = $skipConfig['skip_instanceof'] ?? [];
@@ -40,9 +30,6 @@ class SkipCaptureService
 
     /**
      * Check that exception should be skip
-     *
-     * @param \Throwable $exception
-     * @return bool
      */
     public function shouldExceptionCaptureBeSkipped(\Throwable $exception): bool
     {
@@ -72,9 +59,6 @@ class SkipCaptureService
 
     /**
      * Check that message or command should be skip
-     *
-     * @param string $message
-     * @return bool
      */
     public function shouldMessageCaptureBeSkipped(string $message): bool
     {

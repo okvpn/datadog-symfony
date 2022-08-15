@@ -12,10 +12,10 @@ class MonologContextDumper implements ContextDumperInterface
     protected const MAX_STRING_LENGTH = 2048;
     protected const MAX_CONTEXT_ITEMS = 100;
 
-    protected $openSeparator = "\n{code}\n%%%\n```\n";
+    protected string $openSeparator = "\n{code}\n%%%\n```\n";
 
     //Jira code separator + datadog markdown separator
-    protected $closeSeparator = "\n```\n%%%\n{code}\n";
+    protected string $closeSeparator = "\n```\n%%%\n{code}\n";
 
     /**
      * {@inheritdoc}
@@ -64,7 +64,7 @@ class MonologContextDumper implements ContextDumperInterface
 
         if ($exception) {
             $message = '[' . get_class($exception) . '] ' . $message;
-            $strOutput = (string) $exception . "\n\n" . $strOutput;
+            $strOutput = $exception . "\n\n" . $strOutput;
         }
         if ($strOutput) {
             $strOutput = str_replace('\n', '', $strOutput);

@@ -11,10 +11,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class OkvpnDatadogBundle extends Bundle
 {
-    /**
-     * @var float
-     */
-    private $startTime;
+    private ?float $startTime;
 
     public function __construct()
     {
@@ -48,9 +45,6 @@ class OkvpnDatadogBundle extends Bundle
         $container->addCompilerPass(new PushDatadogHandlerPass());
     }
 
-    /**
-     * @return float|null
-     */
     public function getStartTime(): ?float
     {
         return $this->startTime;

@@ -8,24 +8,12 @@ use Doctrine\DBAL\Logging\SQLLogger;
 class DatadogSqlLogger implements SQLLogger
 {
     /**
-     * @var DogStatsInterface
-     */
-    private $statsd;
-
-    /**
      * Start time of currently executed query
-     *
-     * @var integer
      */
-    private $queryStartTime = null;
+    private ?int $queryStartTime = null;
 
-    /**
-     * @param DogStatsInterface $statsd
-     */
-    public function __construct(DogStatsInterface $statsd)
-    {
-        $this->statsd = $statsd;
-    }
+    public function __construct(private DogStatsInterface $statsd)
+    {}
 
     /**
      * {@inheritdoc}

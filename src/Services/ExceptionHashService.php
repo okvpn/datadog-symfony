@@ -6,20 +6,14 @@ namespace Okvpn\Bundle\DatadogBundle\Services;
 
 class ExceptionHashService
 {
-    private $cacheDirPrefix;
-
-    public function __construct(string $cacheDirPrefix)
+    public function __construct(private string $cacheDirPrefix)
     {
         // skip AUTO GENERATED classes
-        $this->cacheDirPrefix = $cacheDirPrefix;
     }
 
     /**
      * This function returns a unique identifier for the exception.
      * This id can be used as a hash key for find duplicate exceptions
-     *
-     * @param \Throwable $exception
-     * @return string
      */
     public function hash(\Throwable $exception): string
     {
@@ -31,12 +25,11 @@ class ExceptionHashService
         ];
 
         foreach ($trace as $place) {
-            if (isset($place['file'], $place['line']) && $place['file'] && $place['line'] > 0 && strpos($place['file'], $this->cacheDirPrefix) === false) {
+            if (isset($place['file'], $place['line']) && $place['file'] && $place['line'] > 0 && !str_contains($place['file'], $this->cacheDirPrefix)) {
                 $hash .= $place['file'] . ':' . $place['line'] . "\n";
             }
         }
 
-        $hash = sha1($hash);
-        return $hash;
+        return sha1($hash);
     }
 }

@@ -12,11 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DatadogExceptionCommand extends Command
 {
-    private $logger;
-
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
         parent::__construct();
     }
 
@@ -34,18 +31,15 @@ class DatadogExceptionCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         switch ($input->getOption('filter')) {
             case 'skip_instanceof':
                 throw new DemoDatadogException('Test datadog handle exception');
-                break;
             case 'skip_capture':
                 throw new \UnderflowException('Test datadog handle exception');
-                break;
             case 'skip_wildcard':
                 throw new \RuntimeException('Loading of entity aliases failed');
-                break;
             case 'test_logger':
                 $exception = new \RuntimeException('Logger exception');
                 $this->logger->error('Unhatched exception', ['exception' => $exception]);
@@ -55,6 +49,7 @@ class DatadogExceptionCommand extends Command
                 $this->logger->error('Loading of entity aliases failed', ['exception' => $exception]);
                 break;
             default:
+                /** @noinspection PhpUndefinedFunctionInspection */
                 \function_do_not_exists();
         }
 
