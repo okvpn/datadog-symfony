@@ -12,15 +12,10 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 trait OkvpnKernelTrait
 {
     protected function loadRoutes(RoutingConfigurator $routes): void
-    #protected function configureRoutes(RoutingConfigurator $routes): void
     {
-      #  $confDir = $this->getProjectDir().'/config';
-
         $routes->add('/', "app.controller.base_controller:index");
         $routes->add('/exception', "app.controller.base_controller:exception");
         $routes->add('/entity', "app.controller.base_controller:entity");
-
-        dump($routes);
     }
 }
 
