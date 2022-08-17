@@ -75,6 +75,7 @@ class IntegrationTest extends WebTestCase
         $this->client->getResponse();
 
         $records = $this->getClientDecorator()->getRecords();
+
         self::assertNotEmpty($records);
 
         $args = array_column($records, 'args');

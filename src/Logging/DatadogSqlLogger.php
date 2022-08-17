@@ -10,7 +10,7 @@ class DatadogSqlLogger implements SQLLogger
     /**
      * Start time of currently executed query
      */
-    private ?int $queryStartTime = null;
+    private ?float $queryStartTime = null;
 
     public function __construct(private DogStatsInterface $statsd)
     {}

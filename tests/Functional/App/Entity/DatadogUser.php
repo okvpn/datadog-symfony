@@ -28,7 +28,7 @@ class DatadogUser
         return $this->username;
     }
 
-    public function setUsername(string $username): DatadogUser
+    public function setUsername(string $username): static
     {
         $this->username = $username;
 

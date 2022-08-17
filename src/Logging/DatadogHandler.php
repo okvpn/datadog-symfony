@@ -18,6 +18,7 @@ class DatadogHandler extends AbstractProcessingHandler
 
     /**
      * {@inheritdoc}
+     * TODO $record changed from array to LogRecord (needs refactoring and tests)
      */
     protected function write(LogRecord $record): void
     {

@@ -4,9 +4,6 @@ framework:
     default_locale: en
     profiler: { collect: true }
     session:
-        #handler_id: null
-        #cookie_secure: auto
-        #cookie_samesite: lax
         storage_factory_id: session.storage.factory.mock_file
     http_method_override: false
 
@@ -16,7 +13,7 @@ doctrine:
         path: '%kernel.project_dir%/test.db'
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
-        naming_strategy: doctrine.orm.naming_strategy.underscore
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         mappings:
             App:

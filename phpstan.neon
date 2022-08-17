@@ -1,0 +1,12 @@
+parameters:
+    checkMissingIterableValueType: false
+    reportUnmatchedIgnoredErrors: false
+
+    excludePaths:
+        - ./src/OkvpnDatadogBundle.php
+        - ./src/DependencyInjection/Configuration.php
+
+    ignoreErrors:
+        - '#Property Okvpn\\Bundle\\DatadogBundle\\Client\DatadogClient::\$options is never read, only written.#'
+        - '#Method Okvpn\\Bundle\\DatadogBundle\\DependencyInjection\\OkvpnDatadogExtension::load\(\) has no return type specified.#'
+        - '#Method Okvpn\\Bundle\DatadogBundle\\DependencyInjection\\CompilerPass\\SqlLogger Pass::process\(\) has no return type specified.#'

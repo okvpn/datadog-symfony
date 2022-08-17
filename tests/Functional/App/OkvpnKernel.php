@@ -19,6 +19,8 @@ trait OkvpnKernelTrait
         $routes->add('/', "app.controller.base_controller:index");
         $routes->add('/exception', "app.controller.base_controller:exception");
         $routes->add('/entity', "app.controller.base_controller:entity");
+
+        dump($routes);
     }
 }
 

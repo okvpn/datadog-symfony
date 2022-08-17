@@ -35,6 +35,10 @@
         "symfony/security-bundle": "^4.4 || ^5.0 || ^6.0",
         "symfony/phpunit-bridge": "^4.4 || ^5.0 || ^6.0",
         "symfony/var-dumper": "^4.4 || ^5.0 || ^6.0",
-        "symfony/monolog-bundle": "^3.8"
+        "symfony/monolog-bundle": "^3.8",
+        "phpstan/phpstan": "^1.8"
+    },
+    "scripts": {
+        "phpstan": "phpstan analyse src --no-progress --level=6"
     }
 }
