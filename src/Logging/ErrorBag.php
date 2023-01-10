@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\Logging;
 
+use Monolog\LogRecord;
+
 class ErrorBag
 {
-    private $errors = [];
-    private $currentIndex = 0;
-    private $bufferSize;
-
     /**
-     * @param int $bufferSize
+     * @var LogRecord[]
      */
-    public function __construct(int $bufferSize = 5)
-    {
-        $this->bufferSize = $bufferSize;
-    }
+    private array $errors = [];
+    private int $currentIndex = 0;
 
-    /**
-     * @param array $record
-     */
-    public function pushError(array $record): void
+    public function __construct(private int $bufferSize = 5)
+    {}
+
+    public function pushError(LogRecord $record): void
     {
         $this->errors[$this->currentIndex] = $record;
         $this->currentIndex = ($this->currentIndex+1) % $this->bufferSize;
@@ -33,11 +29,14 @@ class ErrorBag
         $this->currentIndex = 0;
     }
 
-    public function rootError(): ?array
+    public function rootError(): ?LogRecord
     {
-        return isset($this->errors[0]) ? $this->errors[0] : null;
+        return $this->errors[0] ?? null;
     }
 
+    /**
+     * @return LogRecord[]
+     */
     public function getErrors(): array
     {
         $sortErrors = [];

@@ -30,7 +30,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function increment(string $metrics, int $delta = 1, float $sampleRate = 1.0, array $tags = []);
+    public function increment(string $metrics, int $delta = 1, float $sampleRate = 1.0, array $tags = []): DogStatsInterface;
 
     /**
      * Counters track how many times something happens per second, such as page views.
@@ -43,7 +43,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function decrement(string $metric, int $delta = 1, float $sampleRate = 1.0, array $tags = []);
+    public function decrement(string $metric, int $delta = 1, float $sampleRate = 1.0, array $tags = []): DogStatsInterface;
 
     /**
      * Timers in DogStatsD are an implementation of Histograms (not to be confused with timers in the standard StatsD).
@@ -57,7 +57,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function timing(string $metric, float $time, array $tags = []);
+    public function timing(string $metric, float $time, array $tags = []): DogStatsInterface;
 
     /**
      * Time a function
@@ -69,7 +69,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function time(string $metric, callable $func, array $tags = []);
+    public function time(string $metric, callable $func, array $tags = []): DogStatsInterface;
 
     /**
      * Gauges measure the value of a particular thing over time.
@@ -83,7 +83,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function gauge(string $metric, int $value, array $tags = []);
+    public function gauge(string $metric, int $value, array $tags = []): DogStatsInterface;
 
     /**
      * Histograms are specific to DogStatsD. They calculate the statistical distribution of any kind of value,
@@ -97,7 +97,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function histogram(string $metric, float $value, float $sampleRate = 1.0, array $tags = []);
+    public function histogram(string $metric, float $value, float $sampleRate = 1.0, array $tags = []): DogStatsInterface;
 
     /**
      * Sets are used to count the number of unique elements in a group,
@@ -110,7 +110,7 @@ interface DogStatsInterface
      *
      * @return DogStatsInterface
      */
-    public function set(string $metric, int $value, array $tags = []);
+    public function set(string $metric, int $value, array $tags = []): DogStatsInterface;
 
     /**
      * Send a event notification
@@ -129,7 +129,7 @@ interface DogStatsInterface
      * @param string[] $tags      List of tags for this event
      * @return DogStatsInterface
      */
-    public function event(string $title, string $text, array $metadata = [], array $tags = []);
+    public function event(string $title, string $text, array $metadata = [], array $tags = []): DogStatsInterface;
 
     /**
      * DogStatsD can send service checks to Datadog.
@@ -144,12 +144,12 @@ interface DogStatsInterface
      * @param string[] $tags     List of tags for this event
      * @return DogStatsInterface
      */
-    public function serviceCheck(string $name, int $status, array $metadata = [], array $tags = []);
+    public function serviceCheck(string $name, int $status, array $metadata = [], array $tags = []): DogStatsInterface;
 
     /**
      * Get Stat agent transport options
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getOptions(): array;
 
@@ -160,5 +160,5 @@ interface DogStatsInterface
      * @param mixed $default      Default value
      * @return mixed
      */
-    public function getOption(string $name, $default = null);
+    public function getOption(string $name, mixed $default = null): mixed;
 }

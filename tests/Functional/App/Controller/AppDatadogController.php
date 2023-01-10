@@ -4,45 +4,34 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity\DatadogUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-trait AppDatadogControllerTrait
+class AppDatadogController extends AbstractController
 {
-    public function index()
+    public function __construct(protected EntityManagerInterface $em)
+    {}
+
+    public function index(): Response
     {
         return new Response('OK');
     }
 
-    public function exception()
+    public function exception(): void
     {
         // Exception
     }
 
-    public function entity()
+    public function entity(): JsonResponse
     {
-        $user = (new DatadogUser())
-            ->setUsername('foo');
+        $user = (new DatadogUser())->setUsername('foo');
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return new JsonResponse(['status' => true]);
-    }
-}
-
-if (class_exists(AbstractController::class)) {
-    class AppDatadogController extends AbstractController
-    {
-        use AppDatadogControllerTrait;
-    }
-} else {
-    class AppDatadogController extends Controller
-    {
-        use AppDatadogControllerTrait;
     }
 }

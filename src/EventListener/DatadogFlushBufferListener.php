@@ -10,25 +10,8 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 
 class DatadogFlushBufferListener
 {
-    /**
-     * @var ErrorBag
-     */
-    private $errorBag;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param LoggerInterface $logger
-     * @param ErrorBag $errorBag
-     */
-    public function __construct(LoggerInterface $logger, ErrorBag $errorBag)
-    {
-        $this->logger = $logger;
-        $this->errorBag = $errorBag;
-    }
+    public function __construct(private LoggerInterface $logger, private ErrorBag $errorBag)
+    {}
 
     public function onKernelTerminate(): void
     {
@@ -42,9 +25,6 @@ class DatadogFlushBufferListener
         }
     }
 
-    /**
-     * @param ConsoleTerminateEvent $event
-     */
     public function onCliTerminate(ConsoleTerminateEvent $event): void
     {
         if ($record = $this->errorBag->rootError()) {

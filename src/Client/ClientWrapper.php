@@ -12,31 +12,20 @@ class ClientWrapper extends Client
 {
     protected const MAX_REPEAT_COUNT = 1;
 
-    /**
-     * @var array
-     */
-    protected $options = [];
+    /** @var array<string, mixed> */
+    protected array $options = [];
 
-    /**
-     * @var int
-     */
-    protected $repeatCount = 0;
+    protected int $repeatCount = 0;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    public function __construct(LoggerInterface $logger = null, ?string $instanceId = null)
+    public function __construct(protected ?LoggerInterface $logger = null, ?string $instanceId = null)
     {
-        $this->logger = $logger;
         parent::__construct($instanceId);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function configure(array $options = [])
+    public function configure(array $options = []): ClientWrapper|Client
     {
         $this->options = $options;
         return parent::configure($options);
@@ -45,7 +34,7 @@ class ClientWrapper extends Client
     /**
      * {@inheritdoc}
      */
-    public function event($title, $text, array $metadata = [], array $tags = [])
+    public function event($title, $text, array $metadata = [], array $tags = []): ClientWrapper|bool|Client|static
     {
         if (!$this->dataDog) {
             return $this;
@@ -72,22 +61,15 @@ class ClientWrapper extends Client
         ]);
     }
 
-    /**
-     * Get option
-     *
-     * @param string $option
-     * @param null|mixed $default
-     * @return mixed
-     */
-    public function getOption(string $option, $default = null)
+    public function getOption(string $option, mixed $default = null): mixed
     {
-        return isset($this->options[$option]) ? $this->options[$option] : $default;
+        return $this->options[$option] ?? $default;
     }
 
     /**
      * Array of option
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getOptions(): array
     {
@@ -97,7 +79,7 @@ class ClientWrapper extends Client
     /**
      * {@inheritdoc}
      */
-    protected function sendMessages(array $messages)
+    protected function sendMessages(array $messages): ClientWrapper|bool|Client|static
     {
         if ($this->repeatCount >= self::MAX_REPEAT_COUNT) {
             return false;
@@ -119,19 +101,15 @@ class ClientWrapper extends Client
             return $this;
         } catch (\Throwable $exception) {
             $this->repeatCount++;
-            if ($this->logger) {
-                $this->logger->error($exception->getMessage(), ['message' => $messages]);
-            }
+            $this->logger?->error($exception->getMessage(), ['message' => $messages]);
             return false;
         }
     }
 
     /**
      * @param string[] $tags A list of tags to apply to each message
-     *
-     * @return string
      */
-    private function formatTags(array $tags = [])
+    private function formatTags(array $tags = []): string
     {
         if (!$this->dataDog || count($tags) === 0) {
             return '';

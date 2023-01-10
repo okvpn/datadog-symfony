@@ -8,14 +8,12 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class LocalArtifactsStorage implements ArtifactsStorageInterface
 {
-    private $fs;
-    private $baseDir;
-    protected $prefix = 'datadog-';
+    private Filesystem $fs;
+    protected string $prefix = 'datadog-';
 
-    public function __construct(string $baseDir)
+    public function __construct(private string $baseDir)
     {
         $this->fs = new Filesystem();
-        $this->baseDir = $baseDir;
     }
 
     /**

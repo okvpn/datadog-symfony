@@ -13,6 +13,7 @@ class OkvpnDatadogExtension extends Extension
 {
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -42,6 +43,10 @@ class OkvpnDatadogExtension extends Extension
         $container->setParameter('okvpn_datadog.profiling', $config['profiling']);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
     protected function defaultHandlerExceptions(array $config): array
     {
         $config = $config['handle_exceptions'] ?? [];

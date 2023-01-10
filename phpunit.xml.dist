@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
-        colors="true"
-        bootstrap="vendor/autoload.php"
-        verbose="false">
-    <testsuites>
-        <testsuite name="functional">
-            <directory suffix="Test.php">tests/Functional</directory>
-        </testsuite>
-    </testsuites>
-    <php>
-        <server name="KERNEL_DIR" value="tests/Functional/App"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
-        <env name="SHELL_VERBOSITY" value="-1" />
-    </php>
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+         verbose="false">
+  <coverage/>
+  <testsuites>
+    <testsuite name="functional">
+      <directory suffix="Test.php">tests/Functional</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <server name="KERNEL_DIR" value="tests/Functional/App"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <env name="SHELL_VERBOSITY" value="-1"/>
+  </php>
 </phpunit>

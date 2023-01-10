@@ -9,10 +9,7 @@ interface ContextDumperInterface
     /**
      * Dump logs context into format that can send as datadog events
      *
-     * @param string $message
-     * @param array $context
-     *
-     * @return DatadogEvent
+     * @param array<string, mixed> $context
      */
     public function dumpContext(string $message, array $context): DatadogEvent;
 }

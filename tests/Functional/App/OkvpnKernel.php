@@ -7,25 +7,15 @@ namespace Okvpn\Bundle\DatadogBundle\Tests\Functional\App;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 trait OkvpnKernelTrait
 {
-
-    /**
-     * @param LoaderInterface $loader
-     * @return RouteCollection
-     */
-    public function loadRoutes(LoaderInterface $loader)
+    protected function loadRoutes(RoutingConfigurator $routes): void
     {
-        $routes = new RouteCollectionBuilder($loader);
-
         $routes->add('/', "app.controller.base_controller:index");
         $routes->add('/exception', "app.controller.base_controller:exception");
         $routes->add('/entity', "app.controller.base_controller:entity");
-
-        return $routes->build();
     }
 }
 
@@ -36,7 +26,7 @@ class OkvpnKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -47,8 +37,13 @@ class OkvpnKernel extends Kernel
         ];
     }
 
+
+
+
+
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
@@ -58,7 +53,8 @@ class OkvpnKernel extends Kernel
             $container->addObjectResource($this);
             $container->loadFromExtension('framework', [
                 'router' => [
-                    'resource' => self::VERSION_ID > 40000 ? AppKernelRouting::class . '::loadRoutes' : 'kernel:loadRoutes',
+                    'resource' => AppKernelRouting::class . '::loadRoutes',
+                    #'resource' => AppKernelRouting::class . '::configureRoutes',
                     'type' => 'service',
                 ],
             ]);
@@ -70,16 +66,18 @@ class OkvpnKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return __DIR__;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRootDir()
+    public function getRootDir(): string
     {
         return __DIR__ . '/var';
+    }
+
+    public function getCacheDir(): string
+    {
+        return __DIR__.'/var/cache/'.$this->getEnvironment();
     }
 }
