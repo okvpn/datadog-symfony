@@ -24,6 +24,19 @@ composer require okvpn/datadog-symfony
 
 2. And add this bundle to your AppKernel:
 
+For Symfony 4+ add bundle to `config/bundles.php`
+
+```php
+<?php
+return [
+    ... //  bundles
+    Okvpn\Bundle\DatadogBundle\OkvpnDatadogBundle::class => ['all' => true], 
+    ...
+]
+```
+
+For Symfony 3.4
+
 ```php
 <?php
 
@@ -70,17 +83,6 @@ Where `app` metrics namespace.
 | app.http_request              | timing       | Measure timing how long it takes to fully render a page                    |
 
 ## Configuration
-
-For Symfony 4+ add bundle to `config/bundles.php`
-
-```php
-<?php
-return [
-    ... //  bundles
-    Okvpn\Bundle\DatadogBundle\OkvpnDatadogBundle::class => ['all' => true], 
-    ...
-]
-```
 
 And create config `config/packages/datadog.yml` with 
 
