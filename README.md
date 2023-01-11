@@ -133,6 +133,8 @@ class FeedController extends Controller
     #[Route(path: '/', name: 'feeds')]
     public function feedsAction(DogStatsInterface $dogStats): Response
     {
+        $dogStats->decrement('feed');
+        
         return $this->render('feed/feeds.html.twig');
     }
 }
