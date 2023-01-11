@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Okvpn\Bundle\DatadogBundle\Logging;
 
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Logger;
+use Monolog\LogRecord;
 use Okvpn\Bundle\DatadogBundle\Services\SkipCaptureService;
 
 class DatadogHandler extends AbstractProcessingHandler
@@ -19,7 +19,8 @@ class DatadogHandler extends AbstractProcessingHandler
      */
     public function __construct(SkipCaptureService $skipCaptureService, ErrorBag $errorBag)
     {
-        parent::__construct(Logger::ERROR, true);
+        //For BC use int not enum \Monolog\Level::Error
+        parent::__construct(/*Logger::ERROR*/ 400, true);
         $this->errorBag = $errorBag;
         $this->skipCaptureService = $skipCaptureService;
     }
@@ -27,8 +28,12 @@ class DatadogHandler extends AbstractProcessingHandler
     /**
      * {@inheritdoc}
      */
-    protected function write(array $record): void
+    protected function write($record): void
     {
+        if ($record instanceof LogRecord) {
+            $record = $record->toArray();
+        }
+
         $exception = false;
         if (isset($record) && \is_array($record['context'])) {
             foreach ($record['context'] as $value) {

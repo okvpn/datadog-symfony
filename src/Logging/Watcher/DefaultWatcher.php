@@ -50,7 +50,7 @@ class DefaultWatcher implements ContextWatcherInterface
         if ($this->tokenStorage instanceof TokenStorageInterface) {
             $token = $this->tokenStorage->getToken();
             if (null  !== $token) {
-                $context['token'] = $token->serialize();
+                $context['token'] = method_exists($token, '__toString') ? $token->__toString() : $token->serialize();
             }
         }
 

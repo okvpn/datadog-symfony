@@ -36,7 +36,7 @@ class OkvpnKernel extends Kernel
     /**
      * {@inheritdoc}
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -64,13 +64,17 @@ class OkvpnKernel extends Kernel
             ]);
         });
 
-        $loader->load(__DIR__.'/config.yml');
+        if (Kernel::MAJOR_VERSION > 5) {
+            $loader->load(__DIR__.'/config6.yml');
+        } else {
+            $loader->load(__DIR__.'/config.yml');
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return __DIR__;
     }

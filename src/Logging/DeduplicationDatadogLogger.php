@@ -24,12 +24,12 @@ class DeduplicationDatadogLogger extends AbstractLogger
     private $fs;
 
     /**
-     * @var bool 
+     * @var bool
      */
     protected $gc = false;
 
     /**
-     * @var string 
+     * @var string
      */
     protected $deduplicationStore;
 
@@ -46,7 +46,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
         LogLevel::INFO => DogStatsInterface::ALERT_INFO,
         LogLevel::DEBUG => DogStatsInterface::ALERT_INFO,
     ];
-    
+
     public function __construct(DogStatsInterface $statsd, ArtifactsStorageInterface $artifactStorage, ContextWatcherInterface $watcher, ContextDumperInterface $contextDumper, ExceptionHashService $exceptionHashService, string $deduplicationStore = null, int $deduplicationKeepTime = 86400 * 7)
     {
         $this->statsd = $statsd;
@@ -63,7 +63,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
     /**
      * {@inheritdoc}
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $this->touch();
         $context = array_merge(
@@ -76,7 +76,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
         }
         $cause = $datadogEvent->getCause();
         $causeCode = $cause instanceof \Throwable ? $this->exceptionHashService->hash($cause) : sha1($message);
-        
+
         if (!$this->isDuplicate($causeCode)) {
             $this->appendRecord($datadogEvent, $causeCode);
             $message = $datadogEvent->getMessage();
@@ -167,7 +167,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
 
         $handle = fopen($this->deduplicationStore, 'rw+');
         flock($handle, LOCK_EX);
-        $validLogs = array();
+        $validLogs = [];
 
         $timestampValidity = time() - $this->deduplicationKeepTime;
 

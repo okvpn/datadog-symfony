@@ -71,6 +71,25 @@ Where `app` metrics namespace.
 
 ## Configuration
 
+For Symfony 4+ add bundle to `config/bundles.php`
+
+```php
+<?php
+return [
+    ... //  bundles
+    Okvpn\Bundle\DatadogBundle\OkvpnDatadogBundle::class => ['all' => true], 
+    ...
+]
+```
+
+And create config `config/packages/datadog.yml` with 
+
+```
+okvpn_datadog:
+    namespace: app
+    port: 8125  
+```
+
 A more complex setup look like this `config.yml`:
 
 ```
@@ -79,7 +98,7 @@ okvpn_datadog:
     profiling: true       # Default false: enable exception, http request etc.
     namespace: app        # Metric namespace
     port: 8125            # datadog udp port
-    hostname: 127.0.0.1
+    host: 127.0.0.1
     tags:                 # Default tags which sent with every request
         - example.com
         - cz1
@@ -106,6 +125,17 @@ okvpn_datadog:
 ## Usage
 
 ```php
+class FeedController extends Controller
+{
+    // Inject via arg for Symfony 4+
+    #[Route(path: '/', name: 'feeds')]
+    public function feedsAction(DogStatsInterface $dogStats): Response
+    {
+        return $this->render('feed/feeds.html.twig');
+    }
+}
+
+// or use service directly for 3.4
 $client = $this->container->get('okvpn_datadog.client');
 
 /*

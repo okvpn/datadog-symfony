@@ -19,7 +19,7 @@ class ResponseTimeListener
         $this->dogStats = $dogStats;
     }
 
-    public function onKernelTerminate()
+    public function onKernelTerminate(): void
     {
         if (null !== $this->kernel) {
             if ($this->kernel->getStartTime() > 0) {
