@@ -35,7 +35,7 @@ class ErrorBag
 
     public function rootError(): ?array
     {
-        return isset($this->errors[0]) ? $this->errors[0] : null;
+        return $this->errors[0] ?? null;
     }
 
     public function getErrors(): array

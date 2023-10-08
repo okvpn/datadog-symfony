@@ -81,7 +81,7 @@ class ClientWrapper extends Client
      */
     public function getOption(string $option, $default = null)
     {
-        return isset($this->options[$option]) ? $this->options[$option] : $default;
+        return $this->options[$option] ?? $default;
     }
 
     /**

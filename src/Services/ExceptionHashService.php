@@ -36,7 +36,6 @@ class ExceptionHashService
             }
         }
 
-        $hash = sha1($hash);
-        return $hash;
+        return sha1($hash);
     }
 }

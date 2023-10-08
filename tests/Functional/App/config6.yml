@@ -1,0 +1,75 @@
+framework:
+    secret: test
+    test: true
+    default_locale: en
+    profiler: { collect: true }
+    session:
+        storage_factory_id: session.storage.factory.mock_file
+
+doctrine:
+    dbal:
+        driver: 'pdo_sqlite'
+        path: '%kernel.project_dir%/test.db'
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                dir: '%kernel.project_dir%/Entity'
+                prefix: 'Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity'
+
+monolog:
+    handlers:
+        nested:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+
+security:
+    providers:
+        in_memory:
+            memory: ~
+    firewalls:
+        main:
+            lazy: true
+            provider: in_memory
+
+okvpn_datadog:
+    profiling: true
+    namespace: app
+    dedup_keep_time: 5
+    handle_exceptions:
+        skip_instanceof:
+            - 'Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Command\DemoDatadogExceptionInterface'
+        skip_capture:
+            - 'UnderflowException'
+        skip_wildcard:
+            - '*entity aliases failed*'
+
+parameters:
+    request_listener.http_port: 80
+    request_listener.https_port: 443
+
+services:
+    okvpn_datadog.client_test_decorator:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Client\DebugDatadogClient
+        decorates: okvpn_datadog.client
+        public: true
+        arguments: ['@okvpn_datadog.client_test_decorator.inner']
+
+    app.command.exception_command:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Command\DatadogExceptionCommand
+        arguments: ['@logger']
+        tags:
+            - { name: console.command }
+
+    app.controller.base_controller:
+        class: Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller\AppDatadogController
+        public: true
+        calls:
+            - [setContainer, ['@service_container']]
+
+    Okvpn\Bundle\DatadogBundle\Tests\Functional\App\AppKernelRouting:
+        tags: [routing.route_loader]
