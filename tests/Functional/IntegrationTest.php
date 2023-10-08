@@ -6,7 +6,6 @@ namespace Okvpn\Bundle\DatadogBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,7 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class IntegrationTest extends WebTestCase
 {
-    /** @var Client|KernelBrowser */
+    /** @var KernelBrowser */
     private $client;
 
     /**
@@ -87,10 +86,10 @@ class IntegrationTest extends WebTestCase
             $this->runCommand('app:exception');
         } catch (\Throwable $exception) {}
 
-        list($title, $desc) = $this->getClientDecorator()->getLastEvent();
+        [$title, $desc] = $this->getClientDecorator()->getLastEvent();
 
         self::assertNotEmpty($this->getClientDecorator()->getRecords());
-        self::assertContains('Call to undefined function function_do_not_exists', $desc);
+        self::assertContainsStr('Call to undefined function function_do_not_exists', $desc);
     }
 
     public function testDeduplicationLogger()
@@ -103,12 +102,12 @@ class IntegrationTest extends WebTestCase
                 $this->client->request('GET', '/exception');
             } catch (\Exception $exception) {}
 
-            list($title, $desc) = $this->getClientDecorator()->getLastEvent();
+            [$title, $desc] = $this->getClientDecorator()->getLastEvent();
             $desc = $desc ? $this->processDatadogArtifact($desc) : $desc;
             switch ($i) {
                 case 0:
                     self::assertNotEmpty($this->getClientDecorator()->getRecords());
-                    self::assertContains('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
+                    self::assertContainsStr('GET /exception HTTP/1.1', $desc, 'Request details must be save in log');
                     sleep(1);
                     break;
                 case 1:
@@ -136,11 +135,11 @@ class IntegrationTest extends WebTestCase
 
         }
 
-        list($title, $desc) = $this->getClientDecorator()->getLastEvent();
+        [$title, $desc] = $this->getClientDecorator()->getLastEvent();
         self::assertSame($isSkip, empty($desc));
     }
 
-    public function filterExceptionDataProvider()
+    public static function filterExceptionDataProvider()
     {
         yield 'Filter by instanceof' => ['skip_instanceof', true];
 
@@ -270,5 +269,14 @@ class IntegrationTest extends WebTestCase
     protected function getClientDecorator()
     {
         return $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
+    }
+
+    protected static function assertContainsStr(string $needle, $haystack, string $message = '')
+    {
+        if (method_exists(__CLASS__, 'assertStringContainsString')) {
+            self::assertStringContainsString($needle, $haystack, $message);
+        } else {
+            self::assertContains($needle, $haystack, $message);
+        }
     }
 }

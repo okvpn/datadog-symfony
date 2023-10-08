@@ -1,0 +1,49 @@
+name: "Tests"
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '7.4'
+            symfony: 4.4.*
+          - php: '8.1'
+            symfony: 6.4.*
+          - php: '8.3'
+            symfony: 7.0.*
+    name: PHP ${{ matrix.php }} SYMFONY ${{ matrix.symfony }}
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+      
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          extensions: curl, mbstring, pdo, pdo_sqlite, sqlite
+          php-version: ${{ matrix.php }}
+          tools: composer
+      
+      - name: "Install dependencies"
+        run: composer update --ansi --no-interaction
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony }}
+      - name: "Run tests"
+        run: "php vendor/bin/phpunit"

@@ -35,31 +35,6 @@ return [
 ]
 ```
 
-For Symfony 3.4
-
-```php
-<?php
-
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Config\Loader\LoaderInterface;
-
-class AppKernel extends Kernel
-{
-    public function registerBundles()
-    {
-        $bundles = array(
-            // ....
-            new Okvpn\Bundle\DatadogBundle\OkvpnDatadogBundle(), //Should loaded after framework bundle
-        );
-    }
-    
-    public function registerContainerConfiguration(LoaderInterface $loader)
-    {
-        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
-    }
-}
-```
-
 3. Base configuration to enable the datadog client in your `config.yml`
 
 ```

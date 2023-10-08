@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
+#[ORM\Entity]
 class DatadogUser
 {
     /**
@@ -18,6 +19,9 @@ class DatadogUser
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column('id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue('IDENTITY')]
     private $id;
 
     /**
@@ -25,6 +29,7 @@ class DatadogUser
      *
      * @ORM\Column(type="string", length=64)
      */
+    #[ORM\Column('username', type: 'string', length: 64)]
     private $username;
 
     /**

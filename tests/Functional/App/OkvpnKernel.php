@@ -7,27 +7,44 @@ namespace Okvpn\Bundle\DatadogBundle\Tests\Functional\App;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
-trait OkvpnKernelTrait
-{
-
-    /**
-     * @param LoaderInterface $loader
-     * @return RouteCollection
-     */
-    public function loadRoutes(LoaderInterface $loader)
+if (Kernel::VERSION_ID >= 50000) {
+    trait OkvpnKernelTrait
     {
-        $routes = new RouteCollectionBuilder($loader);
+        public function loadRoutes()
+        {
+            $routes = new RouteCollection();
 
-        $routes->add('/', "app.controller.base_controller:index");
-        $routes->add('/exception', "app.controller.base_controller:exception");
-        $routes->add('/entity', "app.controller.base_controller:entity");
+            $routes->add('index', $this->createRoute("/", "app.controller.base_controller::index"));
+            $routes->add("exception", $this->createRoute('/exception', "app.controller.base_controller::exception"));
+            $routes->add("entity", $this->createRoute('/entity', "app.controller.base_controller::entity"));
+            return $routes;
+        }
 
-        return $routes->build();
+        private function createRoute(string $path, string $controller): Route
+        {
+            return new Route($path, ['_controller' => $controller]);
+        }
+    }
+} else {
+    trait OkvpnKernelTrait
+    {
+        public function loadRoutes(LoaderInterface $loader)
+        {
+            $routes = new RouteCollectionBuilder($loader);
+
+            $routes->add('/', "app.controller.base_controller:index");
+            $routes->add('/exception', "app.controller.base_controller:exception");
+            $routes->add('/entity', "app.controller.base_controller:entity");
+
+            return $routes->build();
+        }
     }
 }
+
 
 class OkvpnKernel extends Kernel
 {
@@ -58,13 +75,13 @@ class OkvpnKernel extends Kernel
             $container->addObjectResource($this);
             $container->loadFromExtension('framework', [
                 'router' => [
-                    'resource' => self::VERSION_ID > 40000 ? AppKernelRouting::class . '::loadRoutes' : 'kernel:loadRoutes',
+                    'resource' => AppKernelRouting::class . '::loadRoutes',
                     'type' => 'service',
                 ],
             ]);
         });
 
-        if (Kernel::MAJOR_VERSION > 5) {
+        if (Kernel::VERSION_ID >= 60000) {
             $loader->load(__DIR__.'/config6.yml');
         } else {
             $loader->load(__DIR__.'/config.yml');

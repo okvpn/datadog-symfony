@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Okvpn\Bundle\DatadogBundle\Tests\Functional\App\Entity\DatadogUser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -39,6 +40,11 @@ if (class_exists(AbstractController::class)) {
     class AppDatadogController extends AbstractController
     {
         use AppDatadogControllerTrait;
+
+        public function getDoctrine(): ManagerRegistry
+        {
+            return $this->container->get('doctrine');
+        }
     }
 } else {
     class AppDatadogController extends Controller
