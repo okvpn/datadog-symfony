@@ -271,7 +271,7 @@ class IntegrationTest extends WebTestCase
         return $this->client->getContainer()->get('okvpn_datadog.client_test_decorator');
     }
 
-    protected static function assertContainsStr(string $needle, mixed $haystack, string $message = '')
+    protected static function assertContainsStr(string $needle, $haystack, string $message = '')
     {
         if (method_exists(__CLASS__, 'assertStringContainsString')) {
             self::assertStringContainsString($needle, $haystack, $message);

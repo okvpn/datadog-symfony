@@ -26,7 +26,7 @@ jobs:
             symfony: 6.4.*
           - php: '8.3'
             symfony: 7.0.*
-    name: PHP ${{ matrix.php }} SYMFONY (${{ matrix.symfony }})
+    name: PHP ${{ matrix.php }} SYMFONY ${{ matrix.symfony }}
     runs-on: ubuntu-20.04
     
     steps:
