@@ -21,7 +21,7 @@ class DatadogUser
      */
     #[ORM\Column('id', type: 'integer')]
     #[ORM\Id]
-    #[ORM\CustomIdGenerator]
+    #[ORM\GeneratedValue('IDENTITY')]
     private $id;
 
     /**

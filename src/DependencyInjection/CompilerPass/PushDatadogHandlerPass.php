@@ -13,7 +13,7 @@ class PushDatadogHandlerPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if ('all' !== $container->getParameter('okvpn_datadog.logging') || false === $container->getParameter('okvpn_datadog.profiling')) {
             return;

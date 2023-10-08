@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
-if (Kernel::MAJOR_VERSION >= 5) {
+if (Kernel::VERSION_ID >= 50000) {
     trait OkvpnKernelTrait
     {
         public function loadRoutes()
@@ -81,7 +81,7 @@ class OkvpnKernel extends Kernel
             ]);
         });
 
-        if (Kernel::MAJOR_VERSION > 5) {
+        if (Kernel::VERSION_ID >= 60000) {
             $loader->load(__DIR__.'/config6.yml');
         } else {
             $loader->load(__DIR__.'/config.yml');
