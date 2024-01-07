@@ -17,9 +17,15 @@ services:
             - null
             - null
 
+    Okvpn\Bundle\DatadogBundle\Client\DatadogFactory: ~
+    
+    Okvpn\Bundle\DatadogBundle\Client\DatadogFactoryInterface:
+        alias: Okvpn\Bundle\DatadogBundle\Client\DatadogFactory
+    
     okvpn_datadog.client:
         class: Okvpn\Bundle\DatadogBundle\Client\DatadogClient
-        arguments: [~]
+        factory: ['@Okvpn\Bundle\DatadogBundle\Client\DatadogFactoryInterface', 'createClient']
+        arguments: [[]]
         public: true
 
     Okvpn\Bundle\DatadogBundle\Client\DogStatsInterface:

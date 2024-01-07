@@ -39,8 +39,35 @@ return [
 
 ```
 okvpn_datadog:
-    profiling: true
-    namespace: app # You app namespace for custome metric app.*, see https://docs.datadoghq.com/developers/metrics/#naming-metrics
+    clients:
+        default: 'datadog://127.0.0.1/namespase'
+        
+        ## More clients
+        i2pd_client: 'datadog://10.10.1.1:8125/app?tags=tg1,tg2'
+        'null': null://null
+        mock: mock://mock
+        dns: '%env(DD_CLIENT)%'
+```
+
+Where env var looks like:
+```
+DD_CLIENT=datadog://127.0.0.1:8125/app1?tags=tg1,tg2
+```
+
+Access to client via DIC:
+
+```php
+class FeedController extends Controller
+{
+    // Inject via arg for Symfony 4+
+    #[Route(path: '/', name: 'feeds')]
+    public function feedsAction(DogStatsInterface $dogStats, DogStatsInterface $i2pdClient): Response
+    {
+        $dogStats->decrement('feed');
+        
+        return $this->render('feed/feeds.html.twig');
+    }
+}
 ```
 
 ## Custom metrics that provided by OkvpnDatadogBundle
@@ -59,15 +86,7 @@ Where `app` metrics namespace.
 
 ## Configuration
 
-And create config `config/packages/datadog.yml` with 
-
-```
-okvpn_datadog:
-    namespace: app
-    port: 8125  
-```
-
-A more complex setup look like this `config.yml`:
+A more complex setup look like this  `config/packages/ddog.yml`:
 
 ```
 
