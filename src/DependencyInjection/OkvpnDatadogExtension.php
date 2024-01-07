@@ -49,7 +49,7 @@ class OkvpnDatadogExtension extends Extension
         }
 
         if (true === $config['profiling']) {
-            if (true === $config['doctrine'] && class_exists('Doctrine\DBAL\Logging\SQLLogger')) {
+            if (true === $config['doctrine']) {
                 $loader->load('sqllogger.yml');
             }
             $loader->load('listener.yml');

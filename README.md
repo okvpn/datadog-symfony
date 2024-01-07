@@ -45,6 +45,7 @@ okvpn_datadog:
         ## More clients
         i2pd_client: 'datadog://10.10.1.1:8125/app?tags=tg1,tg2'
         'null': null://null
+        mock: mock://mock
         dns: '%env(DD_CLIENT)%'
 ```
 
