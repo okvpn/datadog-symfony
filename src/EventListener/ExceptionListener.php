@@ -8,15 +8,12 @@ use Okvpn\Bundle\DatadogBundle\Services\SkipCaptureService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleEvent;
-use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Kernel;
 
 class ExceptionListener
 {
-    private $logger;
-    private $skipCaptureService;
+    private LoggerInterface $logger;
+    private SkipCaptureService $skipCaptureService;
 
     /**
      * @param LoggerInterface $logger
@@ -29,11 +26,11 @@ class ExceptionListener
     }
 
     /**
-     * @param GetResponseForExceptionEvent|ExceptionEvent $event
+     * @param ExceptionEvent $event
      */
-    public function onKernelException($event): void
+    public function onKernelException(ExceptionEvent $event): void
     {
-        $exception = method_exists($event, 'getThrowable') ? $event->getThrowable() : $event->getException();
+        $exception = $event->getThrowable();
         if ($this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception)) {
             return;
         }
@@ -42,23 +39,14 @@ class ExceptionListener
     }
 
     /**
-     * @param ConsoleEvent|ConsoleExceptionEvent $event
+     * @param ConsoleEvent $event
      */
-    public function onConsoleError(ConsoleEvent $event)
+    public function onConsoleError(ConsoleErrorEvent $event)
     {
         $command = $event->getCommand();
-        $exception = null;
-        if (Kernel::VERSION_ID > 30300) {
-            if ($event instanceof ConsoleErrorEvent) {
-                $exception = $event->getError();
-            }
-        } else {
-            if ($event instanceof ConsoleExceptionEvent) {
-                $exception = $event->getException();
-            }
-        }
+        $exception = $event->getError();
 
-        if (!$exception || $this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception) || $this->skipCaptureService->shouldMessageCaptureBeSkipped($command->getName())) {
+        if ($this->skipCaptureService->shouldExceptionCaptureBeSkipped($exception) || $this->skipCaptureService->shouldMessageCaptureBeSkipped($command->getName())) {
             return;
         }
 

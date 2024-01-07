@@ -13,12 +13,12 @@ class DatadogFlushBufferListener
     /**
      * @var ErrorBag
      */
-    private $errorBag;
+    private ErrorBag $errorBag;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @param LoggerInterface $logger

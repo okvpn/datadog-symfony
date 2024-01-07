@@ -145,7 +145,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
                 $this->gc = true;
                 continue;
             }
-            list($timestamp, $message) = explode(':', $store[$i], 3);
+            [$timestamp, $message] = explode(':', $store[$i], 3);
 
             if ($message === $causeCode && $timestamp > $timestampValidity) {
                 return true;
