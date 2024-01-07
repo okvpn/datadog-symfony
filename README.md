@@ -57,11 +57,21 @@ DD_CLIENT=datadog://127.0.0.1:8125/app1?tags=tg1,tg2
 Access to client via DIC:
 
 ```php
-$client = $this->container->get('okvpn_datadog.client'); // Default
+$client = $this->container->get('okvpn_datadog.client'); // Default public alias 
 
-// okvpn_datadog.client.default
+// okvpn_datadog.client.default - private services
 // okvpn_datadog.client.i2pd_client
 // okvpn_datadog.client.null
+
+class FeedController 
+{
+    public function __construct(private DogStatsInterface $dogStats){} // default 
+}
+
+class FeedController 
+{
+    public function __construct(private DogStatsInterface $i2pdClient){} // i2pd_client
+}
 ```
 
 ```php
