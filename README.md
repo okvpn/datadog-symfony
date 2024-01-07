@@ -37,7 +37,7 @@ return [
 
 3. Base configuration to enable the datadog client in your `config.yml`
 
-```
+```yaml
 okvpn_datadog:
     clients:
         default: 'datadog://127.0.0.1/namespase'
