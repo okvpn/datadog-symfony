@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'tests/**'
       - 'composer.json'
+      - '.github/**'
     branches:
       - master
   pull_request:
