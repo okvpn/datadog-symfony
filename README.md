@@ -40,7 +40,7 @@ return [
 ```yaml
 okvpn_datadog:
     clients:
-        default: 'datadog://127.0.0.1/namespase'
+        default: 'datadog://127.0.0.1/namespace'
         
         ## More clients
         i2pd_client: 'datadog://10.10.1.1:8125/app?tags=tg1,tg2'
@@ -55,6 +55,14 @@ DD_CLIENT=datadog://127.0.0.1:8125/app1?tags=tg1,tg2
 ```
 
 Access to client via DIC:
+
+```php
+$client = $this->container->get('okvpn_datadog.client'); // Default
+
+// okvpn_datadog.client.default
+// okvpn_datadog.client.i2pd_client
+// okvpn_datadog.client.null
+```
 
 ```php
 class FeedController extends Controller
