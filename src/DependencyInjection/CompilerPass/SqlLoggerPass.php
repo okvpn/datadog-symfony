@@ -7,7 +7,6 @@ namespace Okvpn\Bundle\DatadogBundle\DependencyInjection\CompilerPass;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
 
 class SqlLoggerPass implements CompilerPassInterface
@@ -34,7 +33,7 @@ class SqlLoggerPass implements CompilerPassInterface
                 continue;
             }
             $loggerId = 'okvpn_datadog.sql_logger.' . $name;
-            $container->setDefinition($loggerId, class_exists(ChildDefinition::class) ? new ChildDefinition('okvpn_datadog.logger.sql') : new DefinitionDecorator('okvpn_datadog.logger.sql'));
+            $container->setDefinition($loggerId, new ChildDefinition('okvpn_datadog.logger.sql'));
             $configuration = $container->getDefinition($configuration);
             if ($configuration->hasMethodCall('setSQLLogger')) {
                 $chainLoggerId = 'doctrine.dbal.logger.chain.' . $name;

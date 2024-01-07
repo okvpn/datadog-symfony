@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Okvpn\Bundle\DatadogBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -74,6 +75,37 @@ class Configuration implements ConfigurationInterface
                 ->defaultFalse()
             ->end();
 
+        $this->addClientsSection($rootNode);
+
         return $treeBuilder;
+    }
+
+    private function addClientsSection(ArrayNodeDefinition $rootNode): void
+    {
+        $rootNode->children()
+            ->arrayNode('clients')
+            ->useAttributeAsKey('alias', false)
+            ->beforeNormalization()
+                ->always()
+                ->then(static function ($v) {
+                    if (is_iterable($v)) {
+                        foreach ($v as $name => $client) {
+                            if (is_string($client)) {
+                                $client = ['dsn' => $client];
+                            }
+                            $client['alias'] = $name;
+                            $v[$name] = $client;
+                        }
+                    }
+                    return $v;
+                })
+            ->end()
+            ->arrayPrototype()
+                ->children()
+                    ->scalarNode('alias')->isRequired()->end()
+                    ->scalarNode('dsn')->isRequired()->end()
+                ->end()
+            ->end()
+            ->end();
     }
 }
