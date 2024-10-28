@@ -24,7 +24,7 @@ class OkvpnDatadogBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function boot()
+    public function boot(): void
     {
         if (null === $this->startTime) {
             $this->startTime = microtime(true);
@@ -34,7 +34,7 @@ class OkvpnDatadogBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->startTime = null;
     }
@@ -42,7 +42,7 @@ class OkvpnDatadogBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new SqlLoggerPass(['default']));
         $container->addCompilerPass(new PushDatadogHandlerPass());
