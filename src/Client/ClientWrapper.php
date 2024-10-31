@@ -36,7 +36,7 @@ class ClientWrapper extends Client
     /**
      * {@inheritdoc}
      */
-    public function configure(array $options = [])
+    public function configure(array $options = []): Client
     {
         $this->options = $options;
         return parent::configure($options);
@@ -45,7 +45,7 @@ class ClientWrapper extends Client
     /**
      * {@inheritdoc}
      */
-    public function event($title, $text, array $metadata = [], array $tags = [])
+    public function event($title, $text, array $metadata = [], array $tags = []): Client
     {
         if (!$this->dataDog) {
             return $this;
@@ -97,7 +97,7 @@ class ClientWrapper extends Client
     /**
      * {@inheritdoc}
      */
-    protected function sendMessages(array $messages)
+    protected function sendMessages(array $messages): Client
     {
         if ($this->repeatCount >= self::MAX_REPEAT_COUNT) {
             return false;
