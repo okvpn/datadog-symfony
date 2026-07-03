@@ -22,12 +22,9 @@ class ClientWrapper extends Client
      */
     protected $repeatCount = 0;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected ?LoggerInterface $logger = null;
 
-    public function __construct(LoggerInterface $logger = null, ?string $instanceId = null)
+    public function __construct(?LoggerInterface $logger = null, ?string $instanceId = null)
     {
         $this->logger = $logger;
         parent::__construct($instanceId);

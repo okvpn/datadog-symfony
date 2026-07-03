@@ -47,7 +47,7 @@ class DeduplicationDatadogLogger extends AbstractLogger
         LogLevel::DEBUG => DogStatsInterface::ALERT_INFO,
     ];
 
-    public function __construct(DogStatsInterface $statsd, ArtifactsStorageInterface $artifactStorage, ContextWatcherInterface $watcher, ContextDumperInterface $contextDumper, ExceptionHashService $exceptionHashService, string $deduplicationStore = null, int $deduplicationKeepTime = 86400 * 7)
+    public function __construct(DogStatsInterface $statsd, ArtifactsStorageInterface $artifactStorage, ContextWatcherInterface $watcher, ContextDumperInterface $contextDumper, ExceptionHashService $exceptionHashService, ?string $deduplicationStore = null, int $deduplicationKeepTime = 86400 * 7)
     {
         $this->statsd = $statsd;
         $this->artifactStorage = $artifactStorage;
